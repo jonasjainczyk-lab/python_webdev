@@ -10,3 +10,8 @@ media/
 staticfiles/
 
 .DS_Store
+
+.idea/
+*.iml
+*.iws
+workspace.xml
