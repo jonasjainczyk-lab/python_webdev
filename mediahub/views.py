@@ -1,11 +1,75 @@
 from django.shortcuts import render
-from django.db.models import Q
-#from .models import Media
+# from .api import ( api functions )
+BASE_URL = "https://image.tmdb.org/t/p/"
+POSTER_SIZE = "w500"
+
+def normalize_media_item(item, fallback_media_type=""):
+    title = item.get("title") or item.get("name") or "Unknown title"
+    release_date = item.get("release_date") or item.get("first_air_date") or ""
+    poster_path = item.get("poster_path")
+
+    poster_url = ""
+    if poster_path:
+        poster_url = f"{BASE_URL}{POSTER_SIZE}{poster_path}"
+
+    return {
+        "id": item.get("id"),
+        "title": title,
+        "media_type": item.get("media_type") or fallback_media_type,
+        "rating": item.get("vote_average") or 0,
+        "release_date": release_date,
+        "description": item.get("overview") or "",
+        "poster_url": poster_url,
+        "genre_ids": item.get("genre_ids", []),
+    }
+
+def normalize_media_list(items, fallback_media_type=""):
+    normalized_items = []
+
+    for item in items:
+        normalized_items.append(
+            normalize_media_item(
+                item,
+                fallback_media_type=fallback_media_type,
+            )
+        )
+
+    return normalized_items
+
+def normalize_genre_sections(sections, fallback_media_type=""):
+    normalized_sections = []
+
+    for section in sections:
+        genre_name = section.get("genre", "")
+        items = section.get("items", [])
+
+        normalized_sections.append({
+            "genre": genre_name,
+            "items": normalize_media_list(
+                items,
+                fallback_media_type=fallback_media_type,
+            ),
+        })
+
+    return normalized_sections
 
 def home(request):
-    top_movies = []#Media.objects.filter(media_type="movie").order_by("-rating")[:20]
-    top_series = []#Media.objects.filter(media_type="series").order_by("-rating")[:20]
-    top_anime = []#Media.objects.filter(media_type="anime").order_by("-rating")[:20]
+    api_response = {}#api_home()
+
+    top_movies = normalize_media_list(
+        api_response.get("top_movies", []),
+        fallback_media_type="movie",
+    )
+
+    top_series = normalize_media_list(
+        api_response.get("top_series", []),
+        fallback_media_type="series",
+    )
+
+    top_anime = normalize_media_list(
+        api_response.get("top_anime", []),
+        fallback_media_type="anime",
+    )
 
     context = {
         "top_movies": top_movies,
@@ -21,24 +85,13 @@ def search(request):
     selected_genre = request.GET.get("genre", "").strip()
     has_search = bool(query or selected_genre)
 
-    genres = []
-    results = []
+    api_response = {}#api_search(query=query,genre_id=selected_genre,has_search=has_search,)
 
-    # Später mit Datenbank:
-    #
-    # genres = Media.objects.values_list("genre", flat=True).distinct().order_by("genre")
-    # if has_search:
-    #     results = Media.objects.all()
-    #
-    #     if query:
-    #         results = results.filter(
-    #             Q(title__icontains=query) |
-    #             Q(actors__icontains=query) |
-    #             Q(director__icontains=query)
-    #         ).distinct()
-    #
-    #     if selected_genre:
-    #         results = results.filter(genre=selected_genre)
+    genres = api_response.get("genres", [])
+
+    results = []
+    if has_search:
+        results = normalize_media_list(api_response.get("results", []),)
 
     context = {
         "query": query,
@@ -49,52 +102,29 @@ def search(request):
     }
 
     return render(request, "mediahub/search.html", context)
-def movies_page(request):
-    genre_sections = []
 
-    # Später mit Datenbank:
-    #
-    # genres = Media.objects.filter(
-    #     media_type="movie"
-    # ).values_list("genre", flat=True).distinct().order_by("genre")
-    #
-    # for genre in genres:
-    #     movies = Media.objects.filter(
-    #         media_type="movie",
-    #         genre=genre
-    #     ).order_by("-rating")
-    #
-    #     genre_sections.append({
-    #         "genre": genre,
-    #         "items": movies,
-    #     })
+def movies_page(request):
+    api_response = {}#api_movies()
+
+    genre_sections = normalize_genre_sections(
+        api_response.get("genre_sections", []),
+        fallback_media_type="movie",
+    )
 
     context = {
-        "genre_sections": genre_sections,           # list with genres and their movies 
+        "genre_sections": genre_sections,
     }
 
     return render(request, "mediahub/movies.html", context)
 
 
 def series_page(request):
-    genre_sections = []
+    api_response = {}#api_series()
 
-    # Später mit Datenbank:
-    #
-    # genres = Media.objects.filter(
-    #     media_type="series"
-    # ).values_list("genre", flat=True).distinct().order_by("genre")
-    #
-    # for genre in genres:
-    #     series = Media.objects.filter(
-    #         media_type="series",
-    #         genre=genre
-    #     ).order_by("-rating")
-    #
-    #     genre_sections.append({
-    #         "genre": genre,
-    #         "items": series,
-    #     })
+    genre_sections = normalize_genre_sections(
+        api_response.get("genre_sections", []),
+        fallback_media_type="series",
+    )
 
     context = {
         "genre_sections": genre_sections,
@@ -104,24 +134,12 @@ def series_page(request):
 
 
 def anime_page(request):
-    genre_sections = []
+    api_response = {}#api_anime()
 
-    # Später mit Datenbank:
-    #
-    # genres = Media.objects.filter(
-    #     media_type="anime"
-    # ).values_list("genre", flat=True).distinct().order_by("genre")
-    #
-    # for genre in genres:
-    #     anime = Media.objects.filter(
-    #         media_type="anime",
-    #         genre=genre
-    #     ).order_by("-rating")
-    #
-    #     genre_sections.append({
-    #         "genre": genre,
-    #         "items": anime,
-    #     })
+    genre_sections = normalize_genre_sections(
+        api_response.get("genre_sections", []),
+        fallback_media_type="anime",
+    )
 
     context = {
         "genre_sections": genre_sections,
