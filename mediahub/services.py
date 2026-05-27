@@ -7,7 +7,144 @@ BASE_URL = "https://api.themoviedb.org/3"
 # Schwellenwert um nur relevante Ergebnisse zu bekommen
 MIN_VOTES = 500
 
+# Für die Genre-basierte Suche die richtige genre-id finden für jeweils "movie" und "tv" Suche
+SEARCH_GENRE_MAPPING = {
+    "action": {
+    "name": "Action",
+    "movie_id": 28,
+    "tv_id": 10759,
+},
+"adventure": {
+    "name": "Abenteuer",
+    "movie_id": 12,
+    "tv_id": 10759,
+},
+    "animation": {
+        "name": "Animation",
+        "movie_id": 16,
+        "tv_id": 16,
+    },
+    "comedy": {
+        "name": "Komödie",
+        "movie_id": 35,
+        "tv_id": 35,
+    },
+    "crime": {
+        "name": "Krimi",
+        "movie_id": 80,
+        "tv_id": 80,
+    },
+    "documentary": {
+        "name": "Dokumentarfilm",
+        "movie_id": 99,
+        "tv_id": 99,
+    },
+    "drama": {
+        "name": "Drama",
+        "movie_id": 18,
+        "tv_id": 18,
+    },
+    "family": {
+        "name": "Familie",
+        "movie_id": 10751,
+        "tv_id": 10751,
+    },
+    "mystery": {
+        "name": "Mystery",
+        "movie_id": 9648,
+        "tv_id": 9648,
+    },
+    "scifi_fantasy": {
+        "name": "Sci-Fi & Fantasy",
+        "movie_id": 878,
+        "tv_id": 10765,
+    },
+    "western": {
+        "name": "Western",
+        "movie_id": 37,
+        "tv_id": 37,
+    },
 
+    # Nur Movie vorhanden
+    "history": {
+        "name": "Historie",
+        "movie_id": 36,
+        "tv_id": None,
+    },
+    "horror": {
+        "name": "Horror",
+        "movie_id": 27,
+        "tv_id": None,
+    },
+    "music": {
+        "name": "Musik",
+        "movie_id": 10402,
+        "tv_id": None,
+    },
+    "romance": {
+        "name": "Liebesfilm",
+        "movie_id": 10749,
+        "tv_id": None,
+    },
+    "tv_movie": {
+        "name": "TV-Film",
+        "movie_id": 10770,
+        "tv_id": None,
+    },
+    "thriller": {
+        "name": "Thriller",
+        "movie_id": 53,
+        "tv_id": None,
+    },
+    "war_movie": {
+        "name": "Kriegsfilm",
+        "movie_id": 10752,
+        "tv_id": None,
+    },
+
+    # Nur TV vorhanden
+    "kids": {
+        "name": "Kids",
+        "movie_id": None,
+        "tv_id": 10762,
+    },
+    "news": {
+        "name": "News",
+        "movie_id": None,
+        "tv_id": 10763,
+    },
+    "reality": {
+        "name": "Reality",
+        "movie_id": None,
+        "tv_id": 10764,
+    },
+    "soap": {
+        "name": "Soap",
+        "movie_id": None,
+        "tv_id": 10766,
+    },
+    "talk": {
+        "name": "Talk",
+        "movie_id": None,
+        "tv_id": 10767,
+    },
+    "war_politics": {
+        "name": "War & Politics",
+        "movie_id": None,
+        "tv_id": 10768,
+    },
+}
+
+def get_search_genres():
+    genres = []
+
+    for genre_key, genre_data in SEARCH_GENRE_MAPPING.items():
+        genres.append({
+            "id": genre_key,
+            "name": genre_data["name"],
+        })
+
+    return genres
 
 # APIs für Top Rated (jeweils 10)
 
@@ -109,6 +246,90 @@ def global_search(query):
         return media_results
 
     return []
+
+# API für Genre Suche
+def search_by_genre(genre_id):
+    genre_data = SEARCH_GENRE_MAPPING.get(genre_id)
+
+    if not genre_data:
+        return []
+
+    results = []
+
+    movie_genre_id = genre_data.get("movie_id")
+    tv_genre_id = genre_data.get("tv_id")
+
+    if movie_genre_id:
+        movie_url = (
+            f"{BASE_URL}/discover/movie?api_key={API_KEY}&language=de-DE"
+            f"&with_genres={movie_genre_id}"
+            f"&sort_by=vote_average.desc&vote_count.gte={MIN_VOTES}"
+        )
+
+        movie_response = requests.get(movie_url)
+
+        if movie_response.status_code == 200:
+            movie_results = movie_response.json().get("results", [])
+
+            for item in movie_results:
+                item["media_type"] = "movie"
+
+            results.extend(movie_results)
+
+    if tv_genre_id:
+        tv_url = (
+            f"{BASE_URL}/discover/tv?api_key={API_KEY}&language=de-DE"
+            f"&with_genres={tv_genre_id}"
+            f"&sort_by=vote_average.desc&vote_count.gte={MIN_VOTES}"
+        )
+
+        tv_response = requests.get(tv_url)
+
+        if tv_response.status_code == 200:
+            tv_results = tv_response.json().get("results", [])
+
+            for item in tv_results:
+                item["media_type"] = "tv"
+
+            results.extend(tv_results)
+
+    results.sort(key=lambda item: item.get("vote_average", 0), reverse=True)
+
+    return results
+
+# Kombinierte Global + Genre Suche
+def search_media(query="", genre_id=""):
+    if query:
+        results = global_search(query)
+    elif genre_id:
+        results = search_by_genre(genre_id)
+    else:
+        results = []
+
+    if query and genre_id:
+        genre_data = SEARCH_GENRE_MAPPING.get(genre_id)
+
+        if not genre_data:
+            return results
+
+        movie_genre_id = genre_data.get("movie_id")
+        tv_genre_id = genre_data.get("tv_id")
+
+        filtered_results = []
+
+        for item in results:
+            item_media_type = item.get("media_type")
+            item_genre_ids = item.get("genre_ids", [])
+
+            if item_media_type == "movie" and movie_genre_id is not None and movie_genre_id in item_genre_ids:
+                filtered_results.append(item)
+
+            elif item_media_type == "tv" and tv_genre_id is not None and tv_genre_id in item_genre_ids:
+                filtered_results.append(item)
+
+        results = filtered_results
+
+    return results
 
 # API für Deatillansicht
 

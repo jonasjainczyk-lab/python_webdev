@@ -1,5 +1,6 @@
 from django.shortcuts import render
-# from .api import ( api functions )
+from .services import (get_top_rated_movies,get_top_rated_series,get_top_rated_anime,get_top_by_category,get_media_details,search_media,get_search_genres)
+
 BASE_URL = "https://image.tmdb.org/t/p/"
 POSTER_SIZE = "w500"
 
@@ -54,20 +55,19 @@ def normalize_genre_sections(sections, fallback_media_type=""):
     return normalized_sections
 
 def home(request):
-    api_response = {}#api_home()
 
     top_movies = normalize_media_list(
-        api_response.get("top_movies", []),
+        get_top_rated_movies(),
         fallback_media_type="movie",
     )
 
     top_series = normalize_media_list(
-        api_response.get("top_series", []),
+        get_top_rated_series(),
         fallback_media_type="series",
     )
 
     top_anime = normalize_media_list(
-        api_response.get("top_anime", []),
+        get_top_rated_anime(),
         fallback_media_type="anime",
     )
 
@@ -85,13 +85,11 @@ def search(request):
     selected_genre = request.GET.get("genre", "").strip()
     has_search = bool(query or selected_genre)
 
-    api_response = {}#api_search(query=query,genre_id=selected_genre,has_search=has_search,)
-
-    genres = api_response.get("genres", [])
-
+    genres = get_search_genres()
     results = []
+
     if has_search:
-        results = normalize_media_list(api_response.get("results", []),)
+        results = normalize_media_list(search_media(query = query, genre_id = selected_genre))
 
     context = {
         "query": query,
@@ -104,10 +102,9 @@ def search(request):
     return render(request, "mediahub/search.html", context)
 
 def movies_page(request):
-    api_response = {}#api_movies()
 
     genre_sections = normalize_genre_sections(
-        api_response.get("genre_sections", []),
+        get_top_by_category("movie"),
         fallback_media_type="movie",
     )
 
@@ -119,10 +116,9 @@ def movies_page(request):
 
 
 def series_page(request):
-    api_response = {}#api_series()
 
     genre_sections = normalize_genre_sections(
-        api_response.get("genre_sections", []),
+        get_top_by_category("series"),
         fallback_media_type="series",
     )
 
@@ -134,10 +130,9 @@ def series_page(request):
 
 
 def anime_page(request):
-    api_response = {}#api_anime()
 
     genre_sections = normalize_genre_sections(
-        api_response.get("genre_sections", []),
+        get_top_by_category("anime"),
         fallback_media_type="anime",
     )
 
