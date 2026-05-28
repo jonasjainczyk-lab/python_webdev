@@ -13,7 +13,6 @@ def register(request):
             user = form.save()
 
             try:
-                #GROUP DOES NOT EXIST YET! NEEDS TO BE ADDED VIA ADMIN DASHBOARD
                 default_group = Group.objects.get(name="Member")
 
                 user.groups.add(default_group)

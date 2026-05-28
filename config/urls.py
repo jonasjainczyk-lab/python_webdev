@@ -21,5 +21,5 @@ from django.shortcuts import redirect
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include("mediahub.urls")),
-    path("", include("users.urls")),
+    path("users/", include("users.urls")),
 ]
