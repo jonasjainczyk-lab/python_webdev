@@ -12,6 +12,9 @@ class UserRating(models.Model):
     media_id = models.IntegerField()
     media_type = models.CharField(max_length=20)
 
+    media_title = models.CharField(max_length=255, blank=True)
+    poster_path = models.CharField(max_length=255, blank=True)
+
     rating = models.DecimalField(
         max_digits=3,
         decimal_places=1,
@@ -26,4 +29,4 @@ class UserRating(models.Model):
         unique_together = ("user", "media_id", "media_type")
 
     def __str__(self):
-        return f"{self.user} - {self.media_type}/{self.media_id} - {self.rating}"
+        return f"{self.user} - {self.media_title} - {self.rating}"
