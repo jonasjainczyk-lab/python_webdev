@@ -92,7 +92,7 @@ SEARCH_GENRE_MAPPING = {
         "tv_id": None,
     },
     "thriller": {
-        "name": "Thriller",
+        "name": "Thr+iller",
         "movie_id": 53,
         "tv_id": None,
     },
