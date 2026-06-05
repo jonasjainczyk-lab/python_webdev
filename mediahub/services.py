@@ -346,3 +346,23 @@ def get_media_details(media_id, media_type="movie"):
         return response.json()
 
     return None
+
+"""Funktion um Review im UserRating model zu speichern"""
+
+from .models import UserRating
+
+
+def save_user_review(user, media_id, media_type, media_title, poster_path, rating, text):
+
+    review, created = UserRating.objects.update_or_create(
+        user=user,
+        media_id=media_id,
+        media_type=media_type,
+        defaults={
+            'media_title': media_title,
+            'poster_path': poster_path,
+            'rating': rating,
+            'text': text
+        }
+    )
+    return review
