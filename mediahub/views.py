@@ -343,4 +343,4 @@ def detail_page(request, media_type, media_id):
         "not_found": details is None,
     }
 
-    return render(request, "mediahub/detail.html", context)
+    return render(request, "mediahub/details.html", context)
