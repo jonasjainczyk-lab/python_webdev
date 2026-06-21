@@ -41,13 +41,38 @@ def normalize_media_list(items, fallback_media_type=""):
 
     return normalized_items
 
+def is_japanese_anime_list_item(item):
+    genre_ids = item.get("genre_ids", [])
+    original_language = item.get("original_language", "")
+    origin_country = item.get("origin_country") or []
 
-def normalize_genre_sections(sections, fallback_media_type=""):
+    is_animation = 16 in genre_ids
+    is_japanese_language = original_language == "ja"
+    is_japanese_origin = "JP" in origin_country
+
+    return is_animation and (is_japanese_language or is_japanese_origin)
+
+
+def remove_japanese_anime_from_list(items):
+    filtered_items = []
+
+    for item in items:
+        if not is_japanese_anime_list_item(item):
+            filtered_items.append(item)
+
+    return filtered_items
+
+
+
+def normalize_genre_sections(sections, fallback_media_type="", exclude_anime = False):
     normalized_sections = []
 
     for section in sections:
         genre_name = section.get("genre", "")
         items = section.get("items", [])
+
+        if exclude_anime:
+            items = remove_japanese_anime_from_list(items)
 
         normalized_sections.append({
             "genre": genre_name,
@@ -183,12 +208,12 @@ def get_display_media_type(details, media_type):
 def home(request):
 
     top_movies = normalize_media_list(
-        get_top_rated_movies(),
+        remove_japanese_anime_from_list(get_top_rated_movies()),
         fallback_media_type="movie",
     )
 
     top_series = normalize_media_list(
-        get_top_rated_series(),
+        remove_japanese_anime_from_list(get_top_rated_series()),
         fallback_media_type="tv",
     )
 
@@ -234,6 +259,7 @@ def movies_page(request):
     genre_sections = normalize_genre_sections(
         get_top_by_category("movie"),
         fallback_media_type="movie",
+        exclude_anime= True,
     )
 
     context = {
@@ -248,6 +274,7 @@ def series_page(request):
     genre_sections = normalize_genre_sections(
         get_top_by_category("series"),
         fallback_media_type="tv",
+        exclude_anime= True,
     )
 
     context = {
