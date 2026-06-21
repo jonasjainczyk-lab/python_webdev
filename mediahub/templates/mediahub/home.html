@@ -50,7 +50,7 @@
                 {% for item in top_movies %}
                     <div class="movie-card">
                         <div class="card-cover-container">
-                            <img src="{{ item.poster }}" class="card-cover" alt="{{ item.title }}">
+                            <img src="{{ item.poster_url }}" class="card-cover" alt="{{ item.title }}">
                         </div>
                         <div class="card-meta">
                             <span class="movie-title">{{ item.title }}</span>
@@ -72,7 +72,7 @@
                 {% for item in top_series %}
                     <div class="movie-card">
                         <div class="card-cover-container">
-                            <img src="{{ item.poster }}" class="card-cover" alt="{{ item.title }}">
+                            <img src="{{ item.poster_url }}" class="card-cover" alt="{{ item.title }}">
                         </div>
                         <div class="card-meta">
                             <span class="movie-title">{{ item.title }}</span>
@@ -94,7 +94,7 @@
                 {% for item in top_anime %}
                     <div class="movie-card">
                         <div class="card-cover-container">
-                            <img src="{{ item.poster }}" class="card-cover" alt="{{ item.title }}">
+                            <img src="{{ item.poster_url }}" class="card-cover" alt="{{ item.title }}">
                         </div>
                         <div class="card-meta">
                             <span class="movie-title">{{ item.title }}</span>

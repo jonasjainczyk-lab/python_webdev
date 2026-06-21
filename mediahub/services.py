@@ -151,14 +151,14 @@ def get_search_genres():
 def get_top_rated_movies():
     """Holt die 10 am besten bewerteten Filme aller Zeiten"""
     url = f"{BASE_URL}/movie/top_rated?api_key={API_KEY}&language=de-DE"
-    response = requests.get(url, verify=False)
+    response = requests.get(url)
     return response.json().get("results", [])[:10] if response.status_code == 200 else []
 
 
 def get_top_rated_series():
     """Holt die 10 am besten bewerteten Serien aller Zeiten"""
     url = f"{BASE_URL}/tv/top_rated?api_key={API_KEY}&language=de-DE"
-    response = requests.get(url, verify=False)
+    response = requests.get(url)
     return response.json().get("results", [])[:10] if response.status_code == 200 else []
 
 
@@ -167,7 +167,7 @@ def get_top_rated_anime():
     url = (f"{BASE_URL}/discover/tv?api_key={API_KEY}&language=de-DE"
            f"&with_genres=16&with_original_language=ja"
            f"&sort_by=vote_average.desc&vote_count.gte={MIN_VOTES}")
-    response = requests.get(url, verify=False)
+    response = requests.get(url)
     return response.json().get("results", [])[:10] if response.status_code == 200 else []
 
 
