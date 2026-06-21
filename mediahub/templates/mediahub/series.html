@@ -1,10 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Series Page</title>
-</head>
-<body>
+{% extends 'mediahub/base.html' %}
 
-</body>
-</html>
+{% block title %}Series  - MediaShelf{% endblock %}
+
+{% block content %}
+
+    <h1 class="text-center text-white text-uppercase fw-bold display-3 my-5">
+        {% if request.GET.genre %}
+            {{ request.GET.genre }} - SERIES
+        {% else %}
+            SERIES
+        {% endif %}
+    </h1>
+
+    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4 px-md-5">
+        {% for section in genre_sections %}
+            {% for item in section.items %}
+                <div class="col">
+                    <div class="movie-card">
+                        <div class="card-cover-container">
+                            <img src="https://image.tmdb.org/t/p/w500/qJ2tWw7B7scZ8vORhnA3wCH56UB.jpg" class="card-cover" alt="{{ item.title }}">
+                        </div>
+                        <div class="card-meta">
+                            <span class="movie-title">{{ item.title }}</span>
+                            <span class="movie-rating">⭐ {{ item.rating }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+{% endblock %}

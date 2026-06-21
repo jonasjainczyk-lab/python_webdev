@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
-from .services import (get_top_rated_movies,get_top_rated_series,get_top_rated_anime,get_top_by_category,get_media_details,search_media,get_search_genres, save_user_review)
+from .services import (get_top_rated_movies, get_top_rated_series, get_top_rated_anime, get_top_by_category,
+                       get_media_details, search_media, get_search_genres, save_user_review)
 from django.db.models import Avg
 from .forms import UserRatingForm
 from .models import UserRating
@@ -126,7 +127,6 @@ def normalize_detail(details, media_type):
     }
 
 
-
 def get_display_media_type(details, media_type):
     if not details:
         return media_type
@@ -180,34 +180,106 @@ def get_display_media_type(details, media_type):
     return media_type
 
 
+# bibi edits
+
+DUMMY_MOVIES = [
+    {"title": "Inception", "rating": "8.8"},
+    {"title": "The Dark Knight", "rating": "9.0"},
+    {"title": "Interstellar", "rating": "8.6"},
+    {"title": "Avatar", "rating": "7.8"},
+    {"title": "Gladiator", "rating": "8.5"},
+    {"title": "The Matrix", "rating": "8.7"},
+]
+
+#def home(request):
+ #   context = {
+  #      "top_movies": DUMMY_MOVIES,
+ #       "top_series": DUMMY_MOVIES,
+  #      "top_anime": DUMMY_MOVIES,
+  #      "genres": [{"id": "action"}, {"id": "drama"}, {"id": "scifi"}]
+  #  }
+  #  return render(request, "mediahub/home.html", context)
+
 def home(request):
+    top_movies = ""
+    top_series = ""
+    top_anime = ""
 
-    top_movies = normalize_media_list(
-        get_top_rated_movies(),
-        fallback_media_type="movie",
-    )
+    try: #eingefügt um Fehler abzufangen
+        top_movies = normalize_media_list(
+            get_top_rated_movies(),
+            fallback_media_type="movie",
+        )
 
-    top_series = normalize_media_list(
-        get_top_rated_series(),
-        fallback_media_type="tv",
-    )
+        top_series = normalize_media_list(
+            get_top_rated_series(),
+            fallback_media_type="tv",
+        )
 
-    top_anime = normalize_media_list(
-        get_top_rated_anime(),
-        fallback_media_type="tv",
-    )
+        top_anime = normalize_media_list(
+            get_top_rated_anime(),
+            fallback_media_type="tv",
+        )
+    except Exception as e:
+        top_movies, top_series, top_anime = [], [], []
+
 
     context = {
         "top_movies": top_movies,
         "top_series": top_series,
         "top_anime": top_anime,
+      #  "genres": get_search_genres(),
     }
 
     return render(request, "mediahub/home.html", context)
 
 
-def search(request):
 
+def movies_page(request):
+    context = {
+        "genre_sections": [
+            {
+                "genre_name": "Action & Sci-Fi",
+                "items": DUMMY_MOVIES
+            }
+        ],
+        "genres": [{"id": "action"}, {"id": "drama"}, {"id": "scifi"}]
+    }
+    return render(request, "mediahub/movies.html", context)
+
+
+def series_page(request):
+    context = {
+        "genre_sections": [
+            {
+                "genre_name": "Beliebte Serien",
+                "items": DUMMY_MOVIES  # Nutzen wir einfach als Platzhalter-Daten
+            }
+        ],
+        "genres": [{"id": "action"}, {"id": "drama"}, {"id": "scifi"}]
+    }
+    return render(request, "mediahub/series.html", context)
+
+
+def anime_page(request):
+    context = {
+        "genre_sections": [
+            {
+                "genre_name": "Top Anime",
+                "items": DUMMY_MOVIES
+            }
+        ],
+        "genres": [{"id": "action"}, {"id": "drama"}, {"id": "scifi"}]
+    }
+    return render(request, "mediahub/anime.html", context)
+
+    # edits end
+
+
+
+
+
+def search(request):
     query = request.GET.get("query", "").strip()
     selected_genre = request.GET.get("genre", "").strip()
     has_search = bool(query or selected_genre)
@@ -216,7 +288,7 @@ def search(request):
     results = []
 
     if has_search:
-        results = normalize_media_list(search_media(query = query, genre_id = selected_genre))
+        results = normalize_media_list(search_media(query=query, genre_id=selected_genre))
 
     context = {
         "query": query,
@@ -228,8 +300,7 @@ def search(request):
 
     return render(request, "mediahub/search.html", context)
 
-
-def movies_page(request):
+    # def movies_page(request):
 
     genre_sections = normalize_genre_sections(
         get_top_by_category("movie"),
@@ -242,8 +313,7 @@ def movies_page(request):
 
     return render(request, "mediahub/movies.html", context)
 
-
-def series_page(request):
+    # def series_page(request):
 
     genre_sections = normalize_genre_sections(
         get_top_by_category("series"),
@@ -256,8 +326,7 @@ def series_page(request):
 
     return render(request, "mediahub/series.html", context)
 
-
-def anime_page(request):
+    # def anime_page(request):
 
     genre_sections = normalize_genre_sections(
         get_top_by_category("anime"),
@@ -332,7 +401,7 @@ def detail_page(request, media_type, media_id):
 
     context = {
         "details": details,
-        "media" : media,
+        "media": media,
         "display_media_type": display_media_type,
         "media_type": media_type,
         "media_id": media_id,
