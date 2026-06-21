@@ -152,14 +152,14 @@ def get_top_rated_movies():
     """Holt die 10 am besten bewerteten Filme aller Zeiten"""
     url = f"{BASE_URL}/movie/top_rated?api_key={API_KEY}&language=de-DE"
     response = requests.get(url)
-    return response.json().get("results", [])[:10] if response.status_code == 200 else []
+    return response.json().get("results", [])[:30] if response.status_code == 200 else []
 
 
 def get_top_rated_series():
     """Holt die 10 am besten bewerteten Serien aller Zeiten"""
     url = f"{BASE_URL}/tv/top_rated?api_key={API_KEY}&language=de-DE"
     response = requests.get(url)
-    return response.json().get("results", [])[:10] if response.status_code == 200 else []
+    return response.json().get("results", [])[:30] if response.status_code == 200 else []
 
 
 def get_top_rated_anime():
@@ -220,9 +220,14 @@ def get_top_by_category(media_type):
 
         response = requests.get(url)
         if response.status_code == 200:
+            item_limit = 10
+
+            if media_type in ["movie", "series"]:
+                item_limit = 30
+
             sections.append({
                 "genre": cat["name"],
-                "items": response.json().get("results", [])[:10]  # Jeweils die Top 10 abschneiden
+                "items": response.json().get("results", [])[:item_limit]
             })
 
     return sections

@@ -74,6 +74,8 @@ def normalize_genre_sections(sections, fallback_media_type="", exclude_anime = F
         if exclude_anime:
             items = remove_japanese_anime_from_list(items)
 
+        items = items[:10]
+        
         normalized_sections.append({
             "genre": genre_name,
             "items": normalize_media_list(
@@ -208,12 +210,12 @@ def get_display_media_type(details, media_type):
 def home(request):
 
     top_movies = normalize_media_list(
-        remove_japanese_anime_from_list(get_top_rated_movies()),
+        remove_japanese_anime_from_list(get_top_rated_movies())[:10],
         fallback_media_type="movie",
     )
 
     top_series = normalize_media_list(
-        remove_japanese_anime_from_list(get_top_rated_series()),
+        remove_japanese_anime_from_list(get_top_rated_series())[:10],
         fallback_media_type="tv",
     )
 
