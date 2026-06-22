@@ -1,10 +1,70 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Search Results</title>
-</head>
-<body>
+{% extends 'mediahub/base.html' %}
 
-</body>
-</html>
+{% block title %}Suche - MediaShelf{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-md-5 my-5">
+    <h1 class="text-center text-white text-uppercase fw-bold display-4 mb-4">
+        {% if query %}
+        Ergebnisse für: "{{ query }}"
+        {% elif selected_genre %}
+        Genre: {{ selected_genre|title }}
+        {% else %}
+        Entdecken
+        {% endif %}
+    </h1>
+
+    {% if has_search and not results %}
+    <div class="text-center text-muted my-5">
+        <p class="fs-4">Leider keine Treffer für deine Suche gefunden. 🍿</p>
+        <a href="{% url 'home' %}" class="btn btn-outline-light btn-sm mt-2">Zurück zur Startseite</a>
+    </div>
+    {% endif %}
+
+    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4">
+        {% for item in results %}
+        <div class="col">
+            <a href="{% url 'detail' item.media_type item.id %}" class="text-decoration-none">
+                <div class="movie-card h-100 d-flex flex-column bg-dark rounded-3 overflow-hidden shadow">
+
+                    <div class="card-cover-container position-relative">
+                        {% if item.poster_url %}
+                        <img src="{{ item.poster_url }}" class="card-cover w-100 img-fluid" alt="{{ item.title }}">
+                        {% else %}
+                        <div class="bg-secondary d-flex align-items-center justify-content-center text-muted h-100"
+                             style="aspect-ratio: 2/3;">
+                            No Image
+                        </div>
+                        {% endif %}
+
+                        <span class="position-absolute top-0 end-0 bg-black bg-opacity-75 text-warning fw-bold px-2 py-1 m-2 rounded small shadow-sm">
+                                ⭐ {{ item.rating|stringformat:".1f" }}
+                            </span>
+                    </div>
+
+                    <div class="card-meta p-3 d-flex flex-column flex-grow-1 justify-content-between text-white">
+                        <div>
+                                <span class="movie-title fw-semibold d-block text-truncate text-white"
+                                      title="{{ item.title }}">
+                                    {{ item.title }}
+                                </span>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-3 text-white-50"
+                             style="font-size: 0.8rem;">
+                            <span class="fw-medium">📅 {{ item.release_date|slice:":4" }}</span>
+
+                            <span class="badge text-uppercase px-2 py-1 {% if item.media_type == 'movie' %}bg-primary{% else %}bg-info text-dark{% endif %}"
+                                  style="font-size: 0.7rem; letter-spacing: 0.5px;">
+                                    {{ item.media_type }}
+                                </span>
+                        </div>
+                    </div>
+
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

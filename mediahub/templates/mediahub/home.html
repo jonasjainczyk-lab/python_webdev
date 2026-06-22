@@ -23,10 +23,11 @@
         <div class="d-flex align-items-center">
 
             <div class="input-group" style="width: 500px">
-                <select class="form-select form-select-sm custom-genre-select" aria-label=".form-select-sm example">
+                <select class="form-select form-select-sm custom-genre-select" aria-label=".form-select-sm example"
+                        onchange="if(this.value) { window.location.href='/search/?genre=' + this.value; }">
                     <option selected>Genre</option>
                     {% for g in genres %}
-                        <option value="{{ g.id }}">{{ g.id|title }}</option>
+                    <option value="{{ g.id }}">{{ g.name }}</option>
                     {% endfor %}
                 </select>
                 <input class="form-control custom-search-input" placeholder="Search...">
@@ -43,20 +44,24 @@
 
     <!--Top Movies -->
     <div class="media-section mb-5">
-        <h3 class="text-white text-uppercase fw-semibold mb-3">Top Movies</h3>
+        <h3 class="text-white text-uppercase fw-semibold mb-3 header-link">
+            <a href="{% url 'movies' %}" class="text-decoration-none text-reset">
+                Top Movies <i class="bi bi-chevron-right fs-5 ms-1 arrow-icon"></i>
+            </a>
+        </h3>
         <div class="media-slider d-flex gap-3 text-white">
 
             <div class="media-slider d-flex gap-3 text-white">
                 {% for item in top_movies %}
-                    <div class="movie-card">
-                        <div class="card-cover-container">
-                            <img src="{{ item.poster_url }}" class="card-cover" alt="{{ item.title }}">
-                        </div>
-                        <div class="card-meta">
-                            <span class="movie-title">{{ item.title }}</span>
-                            <span class="movie-rating">{{ item.rating }}</span>
-                        </div>
+                <div class="movie-card">
+                    <div class="card-cover-container">
+                        <img src="{{ item.poster_url }}" class="card-cover" alt="{{ item.title }}">
                     </div>
+                    <div class="card-meta">
+                        <span class="movie-title">{{ item.title }}</span>
+                        <span class="movie-rating">{{ item.rating }}</span>
+                    </div>
+                </div>
                 {% endfor %}
             </div>
 
@@ -65,20 +70,24 @@
 
     <!--Top Series -->
     <div class="media-section mb-5">
-        <h3 class="text-white text-uppercase fw-semibold mb-3">Top Series</h3>
+        <h3 class="text-white text-uppercase fw-semibold mb-3 header-link">
+            <a href="{% url 'series' %}" class="text-decoration-none text-reset">
+                Top Series <i class="bi bi-chevron-right fs-5 ms-1 arrow-icon"></i>
+            </a>
+        </h3>
         <div class="media-slider d-flex gap-3 text-white">
 
             <div class="media-slider d-flex gap-3 text-white">
                 {% for item in top_series %}
-                    <div class="movie-card">
-                        <div class="card-cover-container">
-                            <img src="{{ item.poster_url }}" class="card-cover" alt="{{ item.title }}">
-                        </div>
-                        <div class="card-meta">
-                            <span class="movie-title">{{ item.title }}</span>
-                            <span class="movie-rating">{{ item.rating }}</span>
-                        </div>
+                <div class="movie-card">
+                    <div class="card-cover-container">
+                        <img src="{{ item.poster_url }}" class="card-cover" alt="{{ item.title }}">
                     </div>
+                    <div class="card-meta">
+                        <span class="movie-title">{{ item.title }}</span>
+                        <span class="movie-rating">{{ item.rating }}</span>
+                    </div>
+                </div>
                 {% endfor %}
             </div>
 
@@ -87,20 +96,24 @@
 
     <!--Top Anime -->
     <div class="media-section mb-5">
-        <h3 class="text-white text-uppercase fw-semibold mb-3">Top Anime</h3>
+        <h3 class="text-white text-uppercase fw-semibold mb-3 header-link">
+            <a href="{% url 'anime' %}" class="text-decoration-none text-reset">
+                Top Anime <i class="bi bi-chevron-right fs-5 ms-1 arrow-icon"></i>
+            </a>
+        </h3>
         <div class="media-slider d-flex gap-3 text-white">
 
             <div class="media-slider d-flex gap-3 text-white">
                 {% for item in top_anime %}
-                    <div class="movie-card">
-                        <div class="card-cover-container">
-                            <img src="{{ item.poster_url }}" class="card-cover" alt="{{ item.title }}">
-                        </div>
-                        <div class="card-meta">
-                            <span class="movie-title">{{ item.title }}</span>
-                            <span class="movie-rating">{{ item.rating }}</span>
-                        </div>
+                <div class="movie-card">
+                    <div class="card-cover-container">
+                        <img src="{{ item.poster_url }}" class="card-cover" alt="{{ item.title }}">
                     </div>
+                    <div class="card-meta">
+                        <span class="movie-title">{{ item.title }}</span>
+                        <span class="movie-rating">{{ item.rating }}</span>
+                    </div>
+                </div>
                 {% endfor %}
             </div>
 

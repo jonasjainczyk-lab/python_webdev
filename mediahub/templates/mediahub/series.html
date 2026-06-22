@@ -1,33 +1,56 @@
 {% extends 'mediahub/base.html' %}
 
-{% block title %}Series  - MediaShelf{% endblock %}
+{% block title %}Series - MediaShelf{% endblock %}
 
 {% block content %}
 
-    <h1 class="text-center text-white text-uppercase fw-bold display-3 my-5">
-        {% if request.GET.genre %}
-            {{ request.GET.genre }} - SERIES
-        {% else %}
-            SERIES
-        {% endif %}
-    </h1>
+<h1 class="text-center text-white text-uppercase fw-bold display-3 my-5">
+    {% if request.GET.genre %}
+    {{ request.GET.genre }} - SERIES
+    {% else %}
+    SERIES
+    {% endif %}
+</h1>
 
-    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4 px-md-5">
-        {% for section in genre_sections %}
-            {% for item in section.items %}
-                <div class="col">
-                    <div class="movie-card">
-                        <div class="card-cover-container">
-                            <img src="https://image.tmdb.org/t/p/w500/qJ2tWw7B7scZ8vORhnA3wCH56UB.jpg" class="card-cover" alt="{{ item.title }}">
-                        </div>
-                        <div class="card-meta">
-                            <span class="movie-title">{{ item.title }}</span>
-                            <span class="movie-rating">⭐ {{ item.rating }}</span>
-                        </div>
-                    </div>
+<div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4 px-md-5">
+    {% for section in genre_sections %}
+
+    {% if not request.GET.genre or request.GET.genre|lower in section.genre|lower %}
+
+    {% for item in section.items %}
+    <div class="col">
+        <div class="movie-card h-100 d-flex flex-column bg-dark rounded-3 overflow-hidden shadow">
+
+            <div class="card-cover-container position-relative">
+                {% if item.poster_url %}
+                <img src="{{ item.poster_url }}" class="card-cover w-100 img-fluid" alt="{{ item.title }}">
+                {% else %}
+                <div class="bg-secondary d-flex align-items-center justify-content-center text-muted"
+                     style="aspect-ratio: 2/3;">No Image
                 </div>
-            {% endfor %}
-        {% endfor %}
+                {% endif %}
+
+                <span class="position-absolute top-0 end-0 bg-black bg-opacity-75 text-warning fw-bold px-2 py-1 m-2 rounded small shadow-sm">
+                                    ⭐ {{ item.rating|stringformat:".1f" }}
+                                </span>
+            </div>
+
+            <div class="card-meta p-3 d-flex flex-column flex-grow-1 justify-content-between text-white">
+                <div>
+                    <span class="movie-title fw-semibold d-block text-truncate text-white" title="{{ item.title }}">{{ item.title }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3 text-white-50"
+                     style="font-size: 0.8rem;">
+                    <span class="fw-medium">📅 {{ item.release_date|slice:":4" }}</span>
+                </div>
+            </div>
+
+        </div>
     </div>
+    {% endfor %}
+
+    {% endif %}
+    {% endfor %}
+</div>
 
 {% endblock %}

@@ -27,24 +27,47 @@
 
         <div class="d-flex align-items-center">
             <div class="input-group" style="width: 500px">
-                <select class="form-select form-select-sm custom-genre-select" onchange="location = this.value;">
-                    <option value="{% url 'movies' %}">Genre</option>
+                <select id="navbarGenreSelect" class="form-select form-select-sm custom-genre-select"
+                        onchange="changeGenreOnCurrentPage(this)">
+                    <option selected disabled>Genre</option>
                     {% for g in genres %}
-                        <option value="{% url 'movies' %}?genre={{ g.id }}"
-                                {% if request.GET.genre == g.id|stringformat:"s" %}selected{% endif %}>
-                            {{ g.id|title }}
-                        </option>
+                    <option value="{{ g.id }}">{{ g.name }}</option>
                     {% endfor %}
                 </select>
-
                 <input class="form-control custom-search-input" placeholder="Search...">
             </div>
 
-            <div class="custom-profile-btn ms-4"></div>
+            <div class="custom-profile-btn ms-3"></div>
         </div>
 
     </div>
 </nav>
+
+<script>
+    function changeGenreOnCurrentPage(selectElement) {
+        const genreId = selectElement.value;
+        const currentPath = window.location.pathname;
+
+        // Falls wir auf der Home-Seite (/) sind, leiten wir auf die Suche um
+        if (currentPath === '/' || currentPath === '/mediahub/') {
+            if (genreId) {
+                window.location.href = '/search/?genre=' + genreId;
+            }
+            return;
+        }
+
+        // Wenn wir auf Movies/Series/Anime sind, bleiben wir dort und hängen ?genre= an
+        const currentUrl = new URL(window.location.href);
+        if (genreId) {
+            currentUrl.searchParams.set('genre', genreId);
+            currentUrl.searchParams.delete('page'); // Reset auf Seite 1
+        } else {
+            currentUrl.searchParams.delete('genre');
+        }
+
+        window.location.href = currentUrl.toString();
+    }
+</script>
 
 <div class="container-fluid px-4 mt-4">
 
