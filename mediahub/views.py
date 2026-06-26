@@ -3,9 +3,18 @@ from .services import (get_top_rated_movies,get_top_rated_series,get_top_rated_a
 from django.db.models import Avg
 from .forms import UserRatingForm
 from .models import UserRating
+from django.core.paginator import Paginator
 
 BASE_URL = "https://image.tmdb.org/t/p/"
 POSTER_SIZE = "w500"
+PAGE_SIZE = 30
+SUBPAGE_ITEM_LIMIT = 150
+SUBPAGE_FETCH_LIMIT = 200
+
+def paginate_items(request, items):
+    paginator = Paginator(items, PAGE_SIZE)
+    page_number = request.GET.get("page")
+    return paginator.get_page(page_number)
 
 def normalize_media_item(item, fallback_media_type=""):
     title = item.get("title") or item.get("name") or "Unknown title"
@@ -258,14 +267,21 @@ def search(request):
 
 def movies_page(request):
 
-    genre_sections = normalize_genre_sections(
-        get_top_by_category("movie"),
+    raw_movies = get_top_rated_movies(limit=SUBPAGE_FETCH_LIMIT)
+    raw_movies = remove_japanese_anime_from_list(raw_movies)
+    raw_movies = raw_movies[:SUBPAGE_ITEM_LIMIT]
+
+    movies = normalize_media_list(
+        raw_movies,
         fallback_media_type="movie",
-        exclude_anime= True,
     )
 
+    page_obj = paginate_items(request, movies)
+
     context = {
-        "genre_sections": genre_sections,
+        "items": page_obj.object_list,
+        "page_obj": page_obj,
+        "page_title": "Top Movies",
     }
 
     return render(request, "mediahub/movies.html", context)
@@ -273,14 +289,21 @@ def movies_page(request):
 
 def series_page(request):
 
-    genre_sections = normalize_genre_sections(
-        get_top_by_category("series"),
+    raw_series = get_top_rated_series(limit=SUBPAGE_FETCH_LIMIT)
+    raw_series = remove_japanese_anime_from_list(raw_series)
+    raw_series = raw_series[:SUBPAGE_ITEM_LIMIT]
+
+    series = normalize_media_list(
+        raw_series,
         fallback_media_type="tv",
-        exclude_anime= True,
     )
 
+    page_obj = paginate_items(request, series)
+
     context = {
-        "genre_sections": genre_sections,
+        "items": page_obj.object_list,
+        "page_obj": page_obj,
+        "page_title": "Top Series",
     }
 
     return render(request, "mediahub/series.html", context)
@@ -288,13 +311,19 @@ def series_page(request):
 
 def anime_page(request):
 
-    genre_sections = normalize_genre_sections(
-        get_top_by_category("anime"),
+    raw_anime = get_top_rated_anime(limit=SUBPAGE_ITEM_LIMIT)
+
+    anime = normalize_media_list(
+        raw_anime,
         fallback_media_type="tv",
     )
 
+    page_obj = paginate_items(request, anime)
+
     context = {
-        "genre_sections": genre_sections,
+        "items": page_obj.object_list,
+        "page_obj": page_obj,
+        "page_title": "Top Anime",
     }
 
     return render(request, "mediahub/anime.html", context)
