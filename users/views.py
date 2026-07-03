@@ -24,8 +24,8 @@ def register(request):
                     "Account created, but the default security group was missing."
                 )
 
-            messages.success(request, "Registration successful! You can now log in.")
-            return redirect("login")
+            messages.success(request, "Registration successful!")
+            return redirect("home")
     else:
         form = CustomUserCreationForm()
     return render(request, "users/register.html", {"form": form})
@@ -53,4 +53,4 @@ def logout_view(request):
     if request.method == "POST":
         logout(request)
         return redirect("login")
-    return render(request, "users/logout_confirm.html")
+    return render(request, "home")
