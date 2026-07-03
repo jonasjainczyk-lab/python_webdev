@@ -1,10 +1,97 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>User</title>
-</head>
-<body>
+{% extends 'mediahub/base.html' %}
 
-</body>
-</html>
+{% block title %}Profil von {{ profile_user.username }} - MediaShelf{% endblock %}
+
+{% block content %}
+{% load static %}
+<div class="container my-5">
+
+    <!-- 1. PROFIL-HEADER -->
+    <div class="card bg-dark text-white border-0 shadow-lg p-4 mb-5" style="border-radius: 16px;">
+        <div class="d-flex align-items-center gap-4 flex-wrap flex-md-nowrap">
+            <!-- Großer runder Profil-Button -->
+            <div class="flex-shrink-0">
+                <div class="custom-profile-btn" style="width: 90px; height: 90px; cursor: default; font-size: 2rem;">
+                    <!-- Zeigt den ersten Buchstaben des Usernamens groß an -->
+                    {{ profile_user.username|slice:":1"|upper }}
+                </div>
+            </div>
+
+            <!-- User-Infos -->
+            <div>
+                <h1 class="fw-bold m-0 mb-1">{{ profile_user.username }}</h1>
+                <p class="text-white-50 m-0 small">
+                    📅 Mitglied seit: {{ profile_user.date_joined|date:"d. F Y" }}
+                </p>
+                <span class="badge bg-danger mt-2 px-3 py-2 rounded-pill text-uppercase font-monospace"
+                      style="font-size: 0.75rem; background-color: #E50914 !important;">
+                    {% if profile_user.groups.all %}
+                        {{ profile_user.groups.all.0.name }}
+                    {% else %}
+                        User
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. DEINE REVIEWS / AKTIVITÄT -->
+    <h3 class="fw-bold text-white mb-4">Abgegebene Bewertungen ({{ user_ratings.count }})</h3>
+
+    {% if user_ratings %}
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        {% for r in user_ratings %}
+        <div class="col">
+            <div class="card bg-dark text-white border-0 h-100 shadow p-3"
+                 style="border-radius: 12px; background-color: #1f1f1f !important;">
+                <div class="d-flex gap-3">
+
+                    <!-- Kleines Film-Cover links in der Card -->
+                    <div class="flex-shrink-0"
+                         style="width: 70px; aspect-ratio: 2/3; border-radius: 6px; overflow: hidden; background-color: #2b2b2b;">
+                        {% if r.media.poster_url %}
+                        <img src="{{ r.media.poster_url }}" class="w-100 h-100" style="object-fit: cover;"
+                             alt="{{ r.media.title }}">
+                        {% else %}
+                        <div class="w-100 h-100 d-flex align-items-center justify-content-center text-muted"
+                             style="font-size: 0.6rem;">🎬
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Review-Details rechts daneben -->
+                    <div class="flex-grow-1 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                <h5 class="fw-bold m-0 h6 text-white">
+                                    Review #{{ r.id }}
+                                </h5>
+                                <span class="badge bg-warning text-dark fw-bold flex-shrink-0">⭐ {{ r.rating }}/10</span>
+                            </div>
+
+                            {% if r.text %}
+                            <p class="text-white-50 small m-0 mt-2 lh-sm text-truncate-3">
+                                "{{ r.text }}"
+                            </p>
+                            {% endif %}
+                        </div>
+
+                        <small class="text-white-50 opacity-50 mt-2" style="font-size: 0.7rem;">
+                            Bewertet am {{ r.created_at|date:"d.m.Y" }}
+                        </small>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="p-5 text-center rounded-3 bg-dark text-white-50">
+        <p class="m-0">Du hast noch keine Medien bewertet. Schau dich auf der Startseite um! 🍿</p>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}
