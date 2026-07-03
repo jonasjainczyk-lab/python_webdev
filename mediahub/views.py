@@ -341,3 +341,18 @@ def detail_page(request, media_type, media_id):
     }
 
     return render(request, "mediahub/details.html", context)
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from .models import UserRating  # Stelle sicher, dass dein Rating-Model hier richtig importiert ist!
+
+
+@login_required(login_url='login')
+def user_profile(request):
+    user_ratings = UserRating.objects.filter(user=request.user).order_by('-created_at')
+
+    context = {
+        'profile_user': request.user,
+        'user_ratings': user_ratings,
+    }
+    return render(request, 'mediahub/user.html', context)

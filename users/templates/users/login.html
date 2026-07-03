@@ -1,10 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'mediahub/base.html' %}
 
-</body>
-</html>
+{% block title %}Login - MediaShelf{% endblock %}
+
+{% block content %}
+<div class="container my-5 d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    
+    <div class="card bg-dark text-white border-0 shadow-lg p-4" style="max-width: 450px; width: 100%; border-radius: 16px;">
+        <h2 class="fw-bold text-center mb-4 text-uppercase" style="letter-spacing: 1px;">Einloggen</h2>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} bg-opacity-25 border-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} text-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} small py-2 text-center" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST" id="auth-form">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <label for="username" class="form-label text-white-50 small fw-semibold">Benutzername</label>
+                <input type="text" name="username" id="username" class="form-control" required placeholder="Dein Username">
+            </div>
+
+            <div class="mb-4">
+                <label for="password" class="form-label text-white-50 small fw-semibold">Passwort</label>
+                <input type="password" name="password" id="password" class="form-control" required placeholder="••••••••">
+            </div>
+
+            <button type="submit" class="btn btn-danger w-100 rounded-pill fw-bold py-2 text-uppercase" style="background-color: #E50914; border: none;">
+                Anmelden
+            </button>
+        </form>
+
+        <div class="text-center mt-4 small">
+            <span class="text-white-50">Noch kein Konto?</span> 
+            <a href="{% url 'register' %}" class="text-danger text-decoration-none fw-semibold ms-1">Jetzt registrieren</a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+<style>
+    #auth-form input {
+        background-color: #2b2b2b !important;
+        color: white !important;
+        border: 1px solid #444 !important;
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-size: 0.95rem;
+        width: 100%;
+    }
+    #auth-form input:focus {
+        border-color: #E50914 !important;
+        box-shadow: 0 0 0 0.25rem rgba(229, 9, 20, 0.25) !important;
+        outline: none;
+    }
+</style>

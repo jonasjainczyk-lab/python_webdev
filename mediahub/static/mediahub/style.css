@@ -253,3 +253,47 @@ select.custom-genre-select.form-select option {
 .header-link:hover .arrow-icon {
     transform: translateX(5px);
 }
+
+
+/* Styling für das Review-Formular auf der Detailpage */
+#rating-form-section select,
+#rating-form-section input,
+#rating-form-section textarea {
+    background-color: #2b2b2b !important;
+    color: white !important;
+    border: 1px solid #444 !important;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    width: 100%;
+}
+
+#rating-form-section select {
+    width: auto;
+}
+
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+
+/* Macht den Balken des Sliders dunkelgrau */
+.form-range::-webkit-slider-runnable-track {
+    background-color: #333 !important;
+    height: 8px;
+    border-radius: 4px;
+}
+
+/* Macht den runden Knubbel (Thumb) zum Netflix-Rot */
+.form-range::-webkit-slider-thumb {
+    background-color: #E50914 !important;
+    border: none !important;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    margin-top: -4px; /* Zentriert den Knubbel auf dem Balken */
+}
+
+.form-range::-webkit-slider-thumb:focus {
+    box-shadow: 0 0 0 0.25rem rgba(229, 9, 20, 0.25) !important;
+}
+

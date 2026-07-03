@@ -1,10 +1,191 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Detail Page</title>
-</head>
-<body>
+{% extends 'mediahub/base.html' %}
 
-</body>
-</html>
+{% block title %}{{ media.title }} - MediaShelf{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+
+    <!-- OBERER BLOCK: 2-SPALTEN LAYOUT (COVER LINKS, INFOS RECHTS) -->
+    <div class="row g-4 justify-content-center mb-5">
+
+        <!-- LINKER BLOCK: Cover & Titel (4/12) -->
+        <div class="col-12 col-md-5 col-lg-4">
+            <div class="card bg-dark text-white border-0 shadow-lg overflow-hidden h-100" style="border-radius: 16px;">
+                <div class="position-relative" style="aspect-ratio: 2/3; overflow: hidden; background-color: #1f1f1f;">
+                    {% if media.poster_url %}
+                    <img src="{{ media.poster_url }}" class="w-100 h-100" style="object-fit: cover;"
+                         alt="{{ media.title }}">
+                    {% else %}
+                    <div class="w-100 h-100 d-flex align-items-center justify-content-center text-muted fs-4">Kein Bild
+                        🎬
+                    </div>
+                    {% endif %}
+
+                    <!-- Titel-Overlay  -->
+                    <div class="position-absolute bottom-0 start-0 w-100 p-3"
+                         style="background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);">
+                        <h1 class="fw-bold m-0 text-white h3 text-shadow">{{ media.title }}</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RECHTER BLOCK: Ratings, Besetzung & Beschreibung (8/12) -->
+        <div class="col-12 col-md-7 col-lg-7 d-flex flex-column justify-content-between">
+            <div class="card bg-dark text-white border-0 shadow-lg p-4 h-100" style="border-radius: 16px;">
+
+                <!-- 1. Ratings (Global & User) -->
+                <div class="d-flex justify-content-between align-items-center p-3 rounded-3 mb-4"
+                     style="background-color: #1f1f1f;">
+
+                    <div>
+                        <span class="text-white-50 small d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Community Rating</span>
+                        <span class="fw-bold text-warning fs-4">⭐ {{ media.rating|stringformat:".1f" }}</span>
+                        <small class="text-white-50 d-block" style="font-size: 0.7rem; opacity: 0.6;">(TMDB
+                            Global)</small>
+                    </div>
+
+                    <div>
+                        <span class="text-white-50 small d-block text-uppercase fw-bold" style="font-size: 0.75rem;">MediaShelf Rating</span>
+                        <span class="fw-bold fs-4">
+                            🎬 {% if average_user_rating %}{{ average_user_rating|stringformat:".1f" }}
+                            {% else %}0.0{% endif %}
+                        </span>
+                        <small class="text-white-50 d-block" style="font-size: 0.7rem;">({{ ratings.count }}
+                            Bewertungen)</small>
+                    </div>
+
+                    <div class="text-end">
+                        <span class="text-white-50 small d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Deine Bewertung</span>
+                        {% if user_rating %}
+                        <span class="fw-bold text-info fs-4">⭐ {{ user_rating.rating }}/10</span>
+                        {% else %}
+                        <a href="#rating-form-section" class="btn btn-sm btn-outline-secondary rounded-pill mt-1"
+                           style="font-size: 0.8rem;">
+                            + Jetzt bewerten
+                        </a>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+
+            <!-- 2. Metadaten (Jahr, Dauer) & Besetzung -->
+            <div class="mb-4">
+                <div class="d-flex flex-wrap gap-3 text-white-50 small mb-3 align-items-center">
+                    {% if media.release_date %}
+                    <span class="badge bg-secondary bg-opacity-20 text-white">📅 {{ media.release_date|slice:":4" }}</span>
+                    {% endif %}
+
+                    {% if media.runtime %}
+                    <span class="badge bg-secondary bg-opacity-20 text-white">⏱️ {{ media.runtime }} Min.</span>
+                    {% elif media.number_of_seasons %}
+                    <span class="badge bg-danger text-uppercase">{{ media.number_of_seasons }} Staffel{% if media.number_of_seasons > 1 %}n{% endif %}</span>
+                    {% endif %}
+                </div>
+
+                {% if media.cast %}
+                <div class="mb-3">
+                    <span class="text-white-50 small d-block text-uppercase fw-bold mb-1" style="font-size: 0.75rem;">Besetzung</span>
+                    <p class="m-0 text-white-50" style="font-size: 0.95rem; line-height: 1.4;">
+                        {% for actor in media.cast|slice:":5" %}
+                        <span class="text-white fw-medium">{{ actor.name }}</span>{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- 3. Beschreibung -->
+            <div class="p-3 rounded-3 flex-grow-1" style="background-color: #2b2b2b; border: 1px solid #3a3a3a;">
+                <h6 class="text-uppercase fw-bold text-white-50 small mb-2"
+                    style="letter-spacing: 0.5px; font-size: 0.75rem;">Beschreibung</h6>
+                <p class="card-text text-white m-0 lh-base" style="font-size: 0.95rem; text-align: justify;">
+                    {{ media.description|default:"Keine Beschreibung verfügbar." }}
+                </p>
+            </div>
+
+            <!-- Zurück-Button -->
+            <div class="d-flex justify-content-end mt-3">
+                <a href="javascript:history.back()" class="btn btn-outline-light btn-sm px-3 rounded-pill"
+                   style="font-size: 0.8rem;">
+                    ← Zurück
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- UNTERER BLOCK: BEWERTUNGEN MITTIG DARUNTER  -->
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-9">
+
+        <!-- Eingabefeld für eigene Bewertung -->
+        <div id="rating-form-section" class="card bg-dark text-white border-0 shadow-lg p-4 mb-4"
+             style="border-radius: 16px;">
+            <h5 class="fw-bold mb-3 text-white">Deine Review abgeben</h5>
+            {% if request.user.is_authenticated %}
+            <form method="POST" class="bg-black bg-opacity-25 p-3 rounded-3 border border-secondary border-opacity-20">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label text-white-50 small">Bewertung (1 bis 10):</label>
+                    <div style="max-width: 120px;">
+                        {{ form.rating }}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-white-50 small">Deine Meinung (optional):</label>
+                    {{ form.text }}
+                </div>
+                <button type="submit" class="btn btn-danger btn-sm px-4 rounded-pill fw-semibold"
+                        style="background-color: #E50914;">
+                    Speichern
+                </button>
+            </form>
+            {% else %}
+            <div class="alert alert-secondary bg-dark border-secondary text-center text-white-50 small m-0">
+                Bitte <a href="{% url 'login' %}" class="text-danger fw-bold text-decoration-none">einloggen</a>, um
+                eine Bewertung abzugeben.
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Liste aller User-Bewertungen -->
+        <div class="card bg-dark text-white border-0 shadow-lg p-4" style="border-radius: 16px;">
+            <h5 class="fw-bold mb-4 text-white">Reviews ({{ ratings.count }})</h5>
+
+            {% if ratings %}
+            <div class="d-flex flex-column gap-3">
+                {% for r in ratings %}
+                <div class="d-flex gap-3 p-3 rounded-3 bg-black bg-opacity-20 border border-secondary border-opacity-10">
+                    <!-- Profil-Icon links -->
+                    <div class="flex-shrink-0">
+                        <div class="custom-profile-btn" style="width: 35px; height: 35px; cursor: default;"></div>
+                    </div>
+                    <!-- Content rechts -->
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="fw-bold text-white small">{{ r.user.username }}</span>
+                            <span class="badge bg-warning text-dark fw-bold">⭐ {{ r.rating }}/10</span>
+                        </div>
+                        {% if r.text %}
+                        <p class="text-white-50 m-0 mt-1 small lh-sm" style="text-align: justify;">
+                            {{ r.text }}
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-muted text-center my-4">Noch keine Reviews vorhanden. Sei der Erste! 🍿</p>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+</div>
+
+{% endblock %}

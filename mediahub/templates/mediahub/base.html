@@ -34,10 +34,26 @@
                     <option value="{{ g.id }}">{{ g.name }}</option>
                     {% endfor %}
                 </select>
-                <input class="form-control custom-search-input" placeholder="Search...">
+                <div style="width: 350px">
+                    <form method="get" action="{% url 'search' %}">
+                        <input class="form-control custom-search-input" name="query" placeholder="Search...">
+                    </form>
+                </div>
             </div>
 
-            <div class="custom-profile-btn ms-3"></div>
+            {% if request.user.is_authenticated %}
+            <!-- Wenn der User eingeloggt ist, bringt ihn der Button zum Profil -->
+            <a href="{% url 'user_profile' %}" class="text-decoration-none">
+                <div class="custom-profile-btn">
+                    {{ request.user.username|slice:":1"|upper }}
+                </div>
+            </a>
+            {% else %}
+            <!-- Wenn er NICHT eingeloggt ist, bringt ihn der Button zum Login -->
+            <a href="{% url 'login' %}" class="text-decoration-none">
+                <div class="custom-profile-btn"></div>
+            </a>
+            {% endif %}
         </div>
 
     </div>
@@ -48,7 +64,7 @@
         const genreId = selectElement.value;
         const currentPath = window.location.pathname;
 
-        // Falls wir auf der Home-Seite (/) sind, leiten wir auf die Suche um
+        // Falls Home-Seite, leiten auf Suche um
         if (currentPath === '/' || currentPath === '/mediahub/') {
             if (genreId) {
                 window.location.href = '/search/?genre=' + genreId;
@@ -56,7 +72,7 @@
             return;
         }
 
-        // Wenn wir auf Movies/Series/Anime sind, bleiben wir dort und hängen ?genre= an
+        // Wenn Movies/Series/Anime, bleiben dort und hängen ?genre= an
         const currentUrl = new URL(window.location.href);
         if (genreId) {
             currentUrl.searchParams.set('genre', genreId);
