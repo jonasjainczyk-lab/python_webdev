@@ -1,10 +1,9 @@
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 # from django.contrib.auth.forms import UserCreationForm
 from .forms import CustomUserCreationForm
 from django.contrib import messages
 from django.contrib.auth.models import Group
-from django.contrib.auth.decorators import login_required
 
 
 def register(request):
@@ -24,8 +23,8 @@ def register(request):
                     "Account created, but the default security group was missing."
                 )
 
-            messages.success(request, "Registration successful!")
-            return redirect("home")
+            messages.success(request, "Registration successful! You can now log in.")
+            return redirect("login")
     else:
         form = CustomUserCreationForm()
     return render(request, "users/register.html", {"form": form})
@@ -46,11 +45,3 @@ def login_view(request):
             messages.error(request, "Invalid username or password.")
 
     return render(request, "users/login.html")
-
-
-@login_required
-def logout_view(request):
-    if request.method == "POST":
-        logout(request)
-        return redirect("login")
-    return render(request, "home")

@@ -33,7 +33,7 @@
                     {% if selected_genre %}
                     <option value=""></option>
                     {% else %}
-                    <option value="" selected>Genre</option>
+                    <option value="" selected disabled hidden>Genre</option>
                     {% endif %}
 
                     {% for g in genres %}
@@ -51,14 +51,12 @@
             </div>
 
             {% if request.user.is_authenticated %}
-            <!-- Wenn der User eingeloggt ist, bringt ihn der Button zum Profil -->
             <a href="{% url 'user_profile' %}" class="text-decoration-none">
                 <div class="custom-profile-btn">
                     {{ request.user.username|slice:":1"|upper }}
                 </div>
             </a>
             {% else %}
-            <!-- Wenn er NICHT eingeloggt ist, bringt ihn der Button zum Login -->
             <a href="{% url 'login' %}" class="text-decoration-none">
                 <div class="custom-profile-btn"></div>
             </a>
