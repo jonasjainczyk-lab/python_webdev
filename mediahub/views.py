@@ -32,6 +32,7 @@ def normalize_media_item(item, fallback_media_type=""):
         "title": title,
         "media_type": item.get("media_type") or fallback_media_type,
         "rating": item.get("vote_average") or 0,
+        "vote_count": item.get("vote_count") or 0,
         "release_date": release_date,
         "description": item.get("overview") or "",
         "poster_url": poster_url,
@@ -256,6 +257,9 @@ def has_enough_search_quality(item):
     if item.get("rating") and item.get("rating") > 0:
         quality_count += 1
 
+    if item.get("vote_count", 0) < 50:
+        return False
+
     return quality_count >= 2
 
 def sort_by_rating_desc(items):
@@ -462,6 +466,12 @@ def detail_page(request, media_type, media_id):
 @login_required(login_url='login')
 def user_profile(request):
     user_ratings = UserRating.objects.filter(user=request.user).order_by('-created_at')
+
+    for rating in user_ratings:
+        rating.poster_url = ""
+
+        if rating.poster_path:
+            rating.poster_url = f"{BASE_URL}{POSTER_SIZE}{rating.poster_path}"
 
     context = {
         'profile_user': request.user,
