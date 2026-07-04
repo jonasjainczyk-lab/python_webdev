@@ -24,7 +24,7 @@
                 </div>
                 <div class="card-meta">
                     <span class="movie-title">{{ item.title }}</span>
-                    <span class="movie-rating">⭐ {{ item.rating }}</span>
+                    <span class="movie-rating">⭐ {{ item.rating|floatformat:1 }}</span>
                 </div>
             </div>
         </a>

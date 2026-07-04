@@ -219,12 +219,12 @@ def get_display_media_type(details, media_type):
 def home(request):
 
     top_movies = normalize_media_list(
-        remove_japanese_anime_from_list(get_top_rated_movies())[:10],
+        remove_japanese_anime_from_list(get_top_rated_movies(limit=30))[:10],
         fallback_media_type="movie",
     )
 
     top_series = normalize_media_list(
-        remove_japanese_anime_from_list(get_top_rated_series())[:10],
+        remove_japanese_anime_from_list(get_top_rated_series(limit=30))[:10],
         fallback_media_type="tv",
     )
 
@@ -242,6 +242,21 @@ def home(request):
     return render(request, "mediahub/home.html", context)
 
 
+def has_enough_search_quality(item):
+    quality_count = 0
+
+    if item.get("poster_url"):
+        quality_count += 1
+
+    if item.get("description"):
+        quality_count += 1
+
+    if item.get("rating") and item.get("rating") > 0:
+        quality_count += 1
+
+    return quality_count >= 2
+
+
 def search(request):
 
     query = request.GET.get("query", "").strip()
@@ -253,6 +268,17 @@ def search(request):
 
     if has_search:
         results = normalize_media_list(search_media(query = query, genre_id = selected_genre))
+
+        results = [
+            item for item in results
+            if has_enough_search_quality(item)
+        ]
+
+        results = sorted(
+            results,
+            key=lambda item: item.get("rating") or 0,
+            reverse=True,
+        )
 
     context = {
         "query": query,
@@ -289,7 +315,7 @@ def movies_page(request):
 
 def series_page(request):
 
-    raw_series = get_top_rated_series(limit=SUBPAGE_FETCH_LIMIT)
+    raw_series = get_top_rated_series(limit=SUBPAGE_FETCH_LIMIT +50)
     raw_series = remove_japanese_anime_from_list(raw_series)
     raw_series = raw_series[:SUBPAGE_ITEM_LIMIT]
 
