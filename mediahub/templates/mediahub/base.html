@@ -27,13 +27,22 @@
 
         <div class="d-flex align-items-center">
             <div class="input-group" style="width: 500px">
+                {% if genres %}
                 <select id="navbarGenreSelect" class="form-select form-select-sm custom-genre-select"
                         onchange="changeGenreOnCurrentPage(this)">
-                    <option selected disabled>Genre</option>
+                    {% if selected_genre %}
+                    <option value=""></option>
+                    {% else %}
+                    <option value="" selected>Genre</option>
+                    {% endif %}
+
                     {% for g in genres %}
-                    <option value="{{ g.id }}">{{ g.name }}</option>
+                    <option value="{{ g.id }}" {% if selected_genre == g.id %}selected{% endif %}>
+                        {{ g.name }}
+                    </option>
                     {% endfor %}
                 </select>
+                {% endif %}
                 <div style="width: 350px">
                     <form method="get" action="{% url 'search' %}">
                         <input class="form-control custom-search-input" name="query" placeholder="Search...">
@@ -79,6 +88,7 @@
             currentUrl.searchParams.delete('page'); // Reset auf Seite 1
         } else {
             currentUrl.searchParams.delete('genre');
+            currentUrl.searchParams.delete('page');
         }
 
         window.location.href = currentUrl.toString();

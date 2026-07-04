@@ -92,7 +92,7 @@ SEARCH_GENRE_MAPPING = {
         "tv_id": None,
     },
     "thriller": {
-        "name": "Thr+iller",
+        "name": "Thriller",
         "movie_id": 53,
         "tv_id": None,
     },
@@ -135,6 +135,34 @@ SEARCH_GENRE_MAPPING = {
     },
 }
 
+def get_genres_for_media_type(media_type):
+    genres = []
+
+    if media_type == "movie":
+        id_key = "movie_id"
+    else:
+        id_key = "tv_id"
+
+    used_ids = set()
+
+    for genre in SEARCH_GENRE_MAPPING.values():
+        genre_id = genre.get(id_key)
+
+        if genre_id is None:
+            continue
+
+        if genre_id in used_ids:
+            continue
+
+        genres.append({
+            "id": str(genre_id),
+            "name": genre["name"],
+        })
+
+        used_ids.add(genre_id)
+
+    return genres
+
 def get_search_genres():
     genres = []
 
@@ -155,13 +183,17 @@ def get_search_genres():
 #     response = requests.get(url)
 #     return response.json().get("results", [])[:30] if response.status_code == 200 else []
 
-def get_top_rated_movies(limit=10):
+def get_top_rated_movies(limit=10, genre_id=""):
     """Holt die am besten bewerteten Filme."""
     results = []
     page = 1
 
     while len(results) < limit:
-        url = f"{BASE_URL}/movie/top_rated?api_key={API_KEY}&language=de-DE&page={page}"
+        url = f"{BASE_URL}/discover/movie?api_key={API_KEY}&language=de-DE&sort_by=vote_average.desc&vote_count.gte={MIN_VOTES}&page={page}"
+
+        if genre_id:
+            url += f"&with_genres={genre_id}"
+
         response = requests.get(url)
 
         if response.status_code != 200:
@@ -184,13 +216,17 @@ def get_top_rated_movies(limit=10):
 #     response = requests.get(url)
 #     return response.json().get("results", [])[:30] if response.status_code == 200 else []
 
-def get_top_rated_series(limit=10):
+def get_top_rated_series(limit=10, genre_id=""):
     """Holt die am besten bewerteten Serien."""
     results = []
     page = 1
 
     while len(results) < limit:
-        url = f"{BASE_URL}/tv/top_rated?api_key={API_KEY}&language=de-DE&page={page}"
+        url = f"{BASE_URL}/discover/tv?api_key={API_KEY}&language=de-DE&sort_by=vote_average.desc&vote_count.gte={MIN_VOTES}&page={page}"
+
+        if genre_id:
+            url += f"&with_genres={genre_id}"
+
         response = requests.get(url)
 
         if response.status_code != 200:
@@ -214,12 +250,17 @@ def get_top_rated_series(limit=10):
 #     response = requests.get(url)
 #     return response.json().get("results", [])[:10] if response.status_code == 200 else []
 
-def get_top_rated_anime(limit=10):
+def get_top_rated_anime(limit=10,genre_id=""):
     """Holt die am besten bewerteten japanischen Anime."""
     results = []
     page = 1
 
     while len(results) < limit:
+        genres = "16"
+
+        if genre_id and genre_id != "16":
+            genres = f"16,{genre_id}"
+
         url = (
             f"{BASE_URL}/discover/tv?api_key={API_KEY}&language=de-DE"
             f"&with_genres=16&with_original_language=ja"

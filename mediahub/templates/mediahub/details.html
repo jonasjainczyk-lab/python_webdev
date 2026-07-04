@@ -82,6 +82,14 @@
                     {% elif media.number_of_seasons %}
                     <span class="badge bg-danger text-uppercase">{{ media.number_of_seasons }} Staffel{% if media.number_of_seasons > 1 %}n{% endif %}</span>
                     {% endif %}
+
+                    {% if media.genres %}
+                    <span class="badge bg-secondary bg-opacity-20 text-white">
+                        {% for genre in media.genres %}
+                        {{ genre.name }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </span>
+                    {% endif %}
                 </div>
 
                 {% if media.cast %}

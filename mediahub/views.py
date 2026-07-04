@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
-from .services import (get_top_rated_movies,get_top_rated_series,get_top_rated_anime,get_top_by_category,get_media_details,search_media,get_search_genres, save_user_review)
+from .services import (get_top_rated_movies,get_top_rated_series,get_top_rated_anime,get_top_by_category,get_media_details,
+                       search_media,get_search_genres, save_user_review,get_genres_for_media_type)
 from django.db.models import Avg
 from .forms import UserRatingForm
 from .models import UserRating
@@ -256,6 +257,12 @@ def has_enough_search_quality(item):
 
     return quality_count >= 2
 
+def sort_by_rating_desc(items):
+    return sorted(
+        items,
+        key=lambda item: item.get("rating") or 0,
+        reverse=True,
+    )
 
 def search(request):
 
@@ -274,11 +281,7 @@ def search(request):
             if has_enough_search_quality(item)
         ]
 
-        results = sorted(
-            results,
-            key=lambda item: item.get("rating") or 0,
-            reverse=True,
-        )
+        results = sort_by_rating_desc(results)
 
     context = {
         "query": query,
@@ -293,7 +296,10 @@ def search(request):
 
 def movies_page(request):
 
-    raw_movies = get_top_rated_movies(limit=SUBPAGE_FETCH_LIMIT)
+    selected_genre = request.GET.get("genre", "").strip()
+    genres = get_genres_for_media_type("movie")
+
+    raw_movies = get_top_rated_movies(limit=SUBPAGE_FETCH_LIMIT,genre_id=selected_genre)
     raw_movies = remove_japanese_anime_from_list(raw_movies)
     raw_movies = raw_movies[:SUBPAGE_ITEM_LIMIT]
 
@@ -302,12 +308,15 @@ def movies_page(request):
         fallback_media_type="movie",
     )
 
+    movies = sort_by_rating_desc(movies)
     page_obj = paginate_items(request, movies)
 
     context = {
         "items": page_obj.object_list,
         "page_obj": page_obj,
         "page_title": "Top Movies",
+        "genres": genres,
+        "selected_genre": selected_genre,
     }
 
     return render(request, "mediahub/movies.html", context)
@@ -315,7 +324,10 @@ def movies_page(request):
 
 def series_page(request):
 
-    raw_series = get_top_rated_series(limit=SUBPAGE_FETCH_LIMIT +50)
+    selected_genre = request.GET.get("genre", "").strip()
+    genres = get_genres_for_media_type("tv")
+
+    raw_series = get_top_rated_series(limit=SUBPAGE_FETCH_LIMIT + 50,genre_id=selected_genre)
     raw_series = remove_japanese_anime_from_list(raw_series)
     raw_series = raw_series[:SUBPAGE_ITEM_LIMIT]
 
@@ -324,12 +336,15 @@ def series_page(request):
         fallback_media_type="tv",
     )
 
+    series = sort_by_rating_desc(series)
     page_obj = paginate_items(request, series)
 
     context = {
         "items": page_obj.object_list,
         "page_obj": page_obj,
         "page_title": "Top Series",
+        "genres": genres,
+        "selected_genre": selected_genre,
     }
 
     return render(request, "mediahub/series.html", context)
@@ -337,19 +352,25 @@ def series_page(request):
 
 def anime_page(request):
 
-    raw_anime = get_top_rated_anime(limit=SUBPAGE_ITEM_LIMIT)
+    selected_genre = request.GET.get("genre", "").strip()
+    genres = get_genres_for_media_type("tv")
+
+    raw_anime = get_top_rated_anime(limit=SUBPAGE_ITEM_LIMIT,genre_id=selected_genre)
 
     anime = normalize_media_list(
         raw_anime,
         fallback_media_type="tv",
     )
 
+    anime = sort_by_rating_desc(anime)
     page_obj = paginate_items(request, anime)
 
     context = {
         "items": page_obj.object_list,
         "page_obj": page_obj,
         "page_title": "Top Anime",
+        "genres": genres,
+        "selected_genre": selected_genre,
     }
 
     return render(request, "mediahub/anime.html", context)
