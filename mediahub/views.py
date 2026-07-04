@@ -8,9 +8,9 @@ from django.core.paginator import Paginator
 
 BASE_URL = "https://image.tmdb.org/t/p/"
 POSTER_SIZE = "w500"
-PAGE_SIZE = 30
-SUBPAGE_ITEM_LIMIT = 150
-SUBPAGE_FETCH_LIMIT = 200
+PAGE_SIZE = 36
+SUBPAGE_ITEM_LIMIT = 180
+SUBPAGE_FETCH_LIMIT = 220
 
 def paginate_items(request, items):
     paginator = Paginator(items, PAGE_SIZE)
@@ -272,9 +272,12 @@ def search(request):
 
     genres = get_search_genres()
     results = []
+    page_obj = None
 
     if has_search:
-        results = normalize_media_list(search_media(query = query, genre_id = selected_genre))
+        results = normalize_media_list(
+            search_media(query=query, genre_id=selected_genre)
+        )
 
         results = [
             item for item in results
@@ -282,12 +285,17 @@ def search(request):
         ]
 
         results = sort_by_rating_desc(results)
+        results = results[:SUBPAGE_ITEM_LIMIT]
+
+        page_obj = paginate_items(request, results)
+        results = page_obj.object_list
 
     context = {
         "query": query,
         "selected_genre": selected_genre,
         "genres": genres,
         "results": results,
+        "page_obj": page_obj,
         "has_search": has_search,
     }
 

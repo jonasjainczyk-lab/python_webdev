@@ -261,12 +261,7 @@ def get_top_rated_anime(limit=10,genre_id=""):
         if genre_id and genre_id != "16":
             genres = f"16,{genre_id}"
 
-        url = (
-            f"{BASE_URL}/discover/tv?api_key={API_KEY}&language=de-DE"
-            f"&with_genres=16&with_original_language=ja"
-            f"&sort_by=vote_average.desc&vote_count.gte={MIN_VOTES}"
-            f"&page={page}"
-        )
+        url = f"{BASE_URL}/discover/tv?api_key={API_KEY}&language=de-DE&with_genres={genres}&with_original_language=ja&sort_by=vote_average.desc&vote_count.gte={MIN_VOTES}&page={page}"
 
         response = requests.get(url)
 
@@ -346,22 +341,47 @@ def get_top_by_category(media_type):
 
 # API für globale Suche
 
-def global_search(query):
+def global_search(query, limit=100):
     """
     Sucht unscharf nach dem Begriff über ALLES hinweg (Filme, Serien, Anime).
+    Es werden mehrere TMDB-Seiten geladen, damit relevante Treffer nicht fehlen.
     """
     if not query:
         return []
 
-    url = f"{BASE_URL}/search/multi?api_key={API_KEY}&query={query}&language=de-DE"
-    response = requests.get(url)
+    results = []
+    page = 1
 
-    if response.status_code == 200:
-        results = response.json().get("results", [])
-        media_results = [item for item in results if item.get("media_type") in ["movie", "tv"]]
-        return media_results
+    while len(results) < limit:
+        url = (
+            f"{BASE_URL}/search/multi?api_key={API_KEY}"
+            f"&query={query}&language=de-DE&page={page}"
+        )
 
-    return []
+        response = requests.get(url)
+
+        if response.status_code != 200:
+            break
+
+        data = response.json()
+        page_results = data.get("results", [])
+
+        if not page_results:
+            break
+
+        media_results = [
+            item for item in page_results
+            if item.get("media_type") in ["movie", "tv"]
+        ]
+
+        results.extend(media_results)
+
+        if page >= data.get("total_pages", 1):
+            break
+
+        page += 1
+
+    return results[:limit]
 
 # API für Genre Suche
 def search_by_genre(genre_id):

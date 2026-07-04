@@ -66,5 +66,23 @@
         </div>
         {% endfor %}
     </div>
+
+    {% if page_obj %}
+    <div class="d-flex justify-content-center align-items-center gap-3 my-5">
+        {% if page_obj.has_previous %}
+        <a class="btn btn-outline-light" href="?page=1{% if query %}&query={{ query }}{% endif %}{% if selected_genre %}&genre={{ selected_genre }}{% endif %}">«</a>
+        <a class="btn btn-outline-light" href="?page={{ page_obj.previous_page_number }}{% if query %}&query={{ query }}{% endif %}{% if selected_genre %}&genre={{ selected_genre }}{% endif %}">‹</a>
+        {% endif %}
+
+        <span class="text-white">
+            Seite {{ page_obj.number }} von {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+        <a class="btn btn-outline-light" href="?page={{ page_obj.next_page_number }}{% if query %}&query={{ query }}{% endif %}{% if selected_genre %}&genre={{ selected_genre }}{% endif %}">›</a>
+        <a class="btn btn-outline-light" href="?page={{ page_obj.paginator.num_pages }}{% if query %}&query={{ query }}{% endif %}{% if selected_genre %}&genre={{ selected_genre }}{% endif %}">»</a>
+        {% endif %}
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
