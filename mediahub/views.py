@@ -5,6 +5,7 @@ from django.db.models import Avg
 from .forms import UserRatingForm
 from .models import UserRating
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
 
 BASE_URL = "https://image.tmdb.org/t/p/"
 POSTER_SIZE = "w500"
@@ -457,3 +458,13 @@ def detail_page(request, media_type, media_id):
     }
 
     return render(request, "mediahub/details.html", context)
+
+@login_required(login_url='login')
+def user_profile(request):
+    user_ratings = UserRating.objects.filter(user=request.user).order_by('-created_at')
+
+    context = {
+        'profile_user': request.user,
+        'user_ratings': user_ratings,
+    }
+    return render(request, 'mediahub/user.html', context)
