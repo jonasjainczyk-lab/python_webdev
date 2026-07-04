@@ -322,7 +322,7 @@ def movies_page(request):
     context = {
         "items": page_obj.object_list,
         "page_obj": page_obj,
-        "page_title": "Top Movies",
+        "page_title": "Top Filme",
         "genres": genres,
         "selected_genre": selected_genre,
     }
@@ -350,7 +350,7 @@ def series_page(request):
     context = {
         "items": page_obj.object_list,
         "page_obj": page_obj,
-        "page_title": "Top Series",
+        "page_title": "Top Serien",
         "genres": genres,
         "selected_genre": selected_genre,
     }

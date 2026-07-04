@@ -35,7 +35,7 @@ SEARCH_GENRE_MAPPING = {
         "tv_id": 80,
     },
     "documentary": {
-        "name": "Dokumentarfilm",
+        "name": "Dokumentation",
         "movie_id": 99,
         "tv_id": 99,
     },
@@ -82,7 +82,7 @@ SEARCH_GENRE_MAPPING = {
         "tv_id": None,
     },
     "romance": {
-        "name": "Liebesfilm",
+        "name": "Romanze",
         "movie_id": 10749,
         "tv_id": None,
     },
@@ -104,17 +104,17 @@ SEARCH_GENRE_MAPPING = {
 
     # Nur TV vorhanden
     "kids": {
-        "name": "Kids",
+        "name": "Kinderserie",
         "movie_id": None,
         "tv_id": 10762,
     },
     "news": {
-        "name": "News",
+        "name": "Nachrichten",
         "movie_id": None,
         "tv_id": 10763,
     },
     "reality": {
-        "name": "Reality",
+        "name": "Reality-TV",
         "movie_id": None,
         "tv_id": 10764,
     },
@@ -124,12 +124,12 @@ SEARCH_GENRE_MAPPING = {
         "tv_id": 10766,
     },
     "talk": {
-        "name": "Talk",
+        "name": "Talkshow",
         "movie_id": None,
         "tv_id": 10767,
     },
     "war_politics": {
-        "name": "War & Politics",
+        "name": "Krieg & Politik",
         "movie_id": None,
         "tv_id": 10768,
     },
