@@ -99,7 +99,7 @@
                 <div class="mb-3">
                     <span class="text-white-50 small d-block text-uppercase fw-bold mb-1" style="font-size: 0.75rem;">Besetzung</span>
                     <p class="m-0 text-white-50" style="font-size: 0.95rem; line-height: 1.4;">
-                        {% for actor in media.cast|slice:":5" %}
+                        {% for actor in media.cast|slice:":10" %}
                         <span class="text-white fw-medium">{{ actor.name }}</span>{% if not forloop.last %}, {% endif %}
                         {% endfor %}
                     </p>
