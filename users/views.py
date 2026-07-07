@@ -1,9 +1,10 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 # from django.contrib.auth.forms import UserCreationForm
 from .forms import CustomUserCreationForm
 from django.contrib import messages
 from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import login_required
 
 
 def register(request):
@@ -20,11 +21,11 @@ def register(request):
             except Group.DoesNotExist:
                 messages.warning(
                     request,
-                    "Account created, but the default security group was missing."
+                    "Der Account wurde erstellt, aber die Standardgruppe fehlt."
                 )
 
-            messages.success(request, "Registration successful! You can now log in.")
-            return redirect("login")
+            messages.success(request, "Registrierung war erfolgreich")
+            return redirect("home")
     else:
         form = CustomUserCreationForm()
     return render(request, "users/register.html", {"form": form})
@@ -42,6 +43,14 @@ def login_view(request):
             login(request, user)
             return redirect("home")
         else:
-            messages.error(request, "Invalid username or password.")
+            messages.error(request, "Entweder ungültiges Passwort oder ungültiger Benutzername!")
 
     return render(request, "users/login.html")
+
+
+@login_required
+def logout_view(request):
+    if request.method == "POST":
+        logout(request)
+        return redirect("login")
+    return redirect("home")
