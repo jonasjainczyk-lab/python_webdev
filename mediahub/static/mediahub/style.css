@@ -54,7 +54,7 @@ img {
 /* NAVBAR STYLES */
 
 .navbar-custom {
-    background-color: #141414 !important; /* Tiefschwarze Navbar */
+    background-color: #1b1e27 !important; /* Tiefschwarze Navbar */
 }
 
 /* Suchleiste UND Dropdown über ihre exakten HTML-Klassen stylen */
@@ -240,7 +240,7 @@ select.custom-genre-select.form-select option {
 
 /* Wenn man über die Überschrift hovert */
 .header-link:hover a {
-    color: var( --accent-color) !important;
+    color: var( --primary-color) !important;
     cursor: pointer;
 }
 
