@@ -42,8 +42,9 @@
     <div class="row row-cols-1 row-cols-md-2 g-4">
         {% for r in user_ratings %}
         <div class="col">
-            <div class="card bg-dark text-white border-0 h-100 shadow p-3"
-                 style="border-radius: 12px; background-color: #1f1f1f !important;">
+            <a href="{% url 'detail' r.media_type r.media_id %}"
+               class="card bg-dark text-white border-0 h-100 shadow p-3 text-decoration-none user-review-card"
+               style="border-radius: 12px; background-color: #1f1f1f !important;">
                 <div class="d-flex gap-3">
 
                     <!-- Kleines Film-Cover links in der Card -->
@@ -82,7 +83,7 @@
                     </div>
 
                 </div>
-            </div>
+            </a>
         </div>
         {% endfor %}
     </div>

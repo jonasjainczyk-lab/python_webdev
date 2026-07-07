@@ -235,12 +235,13 @@ select.custom-genre-select.form-select option {
 
 /* Styling für die klickbaren Überschriften */
 .header-link a {
-    transition: color 0.2s ease-in-out;
+    transition: color 0.2s ease, text-shadow 0.2s ease;
 }
 
 /* Wenn man über die Überschrift hovert */
 .header-link:hover a {
-    color: var( --primary-color) !important;
+    color: var(--primary-color) !important;
+    text-shadow: 0 0 8px rgba(229, 9, 20, 0.8) !important;
     cursor: pointer;
 }
 
@@ -297,3 +298,39 @@ select.custom-genre-select.form-select option {
     box-shadow: 0 0 0 0.25rem rgba(229, 9, 20, 0.25) !important;
 }
 
+.navbar-category-link {
+    color: #ffffff !important;
+    transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.navbar-category-link:hover {
+    color: var(--primary-color) !important;
+    text-shadow: 0 0 8px rgba(229, 9, 20, 0.8) !important;
+}
+
+.navbar-logo-link {
+    width: 70px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.navbar-logo-img {
+    height: 50px;
+    width: auto;
+    display: block;
+    transition: filter 0.2s ease;
+}
+
+.navbar-logo-link:hover {
+    background-color: rgba(229, 9, 20, 0.10);
+    box-shadow: 0 0 12px rgba(229, 9, 20, 0.35);
+    transform: scale(1.04);
+}
+
+.navbar-logo-link:hover .navbar-logo-img {
+    filter: drop-shadow(0 0 6px rgba(229, 9, 20, 0.55));
+}
