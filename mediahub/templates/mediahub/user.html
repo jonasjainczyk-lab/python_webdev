@@ -9,12 +9,10 @@
     <!-- 1. PROFIL-HEADER -->
     <div class="card bg-dark text-white border-0 shadow-lg p-4 mb-5" style="border-radius: 16px;">
         <div class="d-flex align-items-center gap-4 flex-wrap flex-md-nowrap">
-            <!-- Großer runder Profil-Button -->
+
+            <!-- profil icon -->
             <div class="flex-shrink-0">
-                <div class="custom-profile-btn" style="width: 90px; height: 90px; cursor: default; font-size: 2rem;">
-                    <!-- Zeigt den ersten Buchstaben des Usernamens groß an -->
-                    {{ profile_user.username|slice:":1"|upper }}
-                </div>
+                <img src="{% static 'mediahub/profil.png' %}" alt="MediaShelf Profil Icon" class="navbar-logo-img">
             </div>
 
             <!-- User-Infos -->
@@ -32,6 +30,17 @@
                     {% endif %}
                 </span>
             </div>
+
+            <!-- logout -->
+            <div class="ms-md-auto">
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-light rounded-pill btn-sm">
+                        Logout
+                    </button>
+                </form>
+            </div>
+
         </div>
     </div>
 

@@ -3,7 +3,16 @@
 {% block title %}{{ media.title }} - MediaShelf{% endblock %}
 
 {% block content %}
-<div class="container my-5">
+
+<!-- Titel-Overlay  -->
+<div class="text-center text-white text-uppercase fw-bold display-5">
+    <h1 class="fw-bold m-0 text-white h2 d-inline-block">
+        {{ media.title }}
+    </h1>
+</div>
+
+
+<div class="container my-3">
 
     <!-- OBERER BLOCK: 2-SPALTEN LAYOUT (COVER LINKS, INFOS RECHTS) -->
     <div class="row g-4 justify-content-center mb-5">
@@ -20,15 +29,6 @@
                         🎬
                     </div>
                     {% endif %}
-
-                    <!-- Titel-Overlay  -->
-                    <div class="position-absolute bottom-0 start-0 w-100 p-3"
-                         style="background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);">
-                        <h1 class="fw-bold m-0 text-white h3 d-inline-block px-3 py-2 rounded-3"
-                            style="background-color: rgba(0,0,0,0.75); border: 1px solid rgba(255,255,255,0.15);">
-                            {{ media.title }}
-                        </h1>
-                    </div>
                 </div>
             </div>
         </div>
@@ -73,129 +73,139 @@
                 </div>
 
 
-            <!-- 2. Metadaten (Jahr, Dauer) & Besetzung -->
-            <div class="mb-4">
-                <div class="d-flex flex-wrap gap-3 text-white-50 small mb-3 align-items-center">
-                    {% if media.release_date %}
-                    <span class="badge bg-secondary bg-opacity-20 text-white">📅 {{ media.release_date|slice:":4" }}</span>
-                    {% endif %}
+                <!-- 2. Metadaten (Jahr, Dauer) & Besetzung -->
+                <div class="mb-4">
+                    <div class="d-flex flex-wrap gap-3 text-white-50 small mb-3 align-items-center">
+                        {% if media.release_date %}
+                        <span class="badge bg-secondary bg-opacity-20 text-white">📅 {{ media.release_date|slice:":4" }}</span>
+                        {% endif %}
 
-                    {% if media.genres %}
-                    <span class="badge bg-secondary bg-opacity-20 text-white">
+                        {% if media.genres %}
+                        <span class="badge bg-secondary bg-opacity-20 text-white">
                         {% for genre in media.genres %}
                         {{ genre.name }}{% if not forloop.last %}, {% endif %}
                         {% endfor %}
                     </span>
-                    {% endif %}
+                        {% endif %}
 
-                    {% if media.runtime %}
-                    <span class="badge bg-secondary bg-opacity-20 text-white">⏱️ {{ media.runtime }} Min.</span>
-                    {% elif media.number_of_seasons %}
-                    <span class="badge bg-danger text-uppercase">{{ media.number_of_seasons }} Staffel{% if media.number_of_seasons > 1 %}n{% endif %}</span>
+                        {% if media.runtime %}
+                        <span class="badge bg-secondary bg-opacity-20 text-white">⏱️ {{ media.runtime }} Min.</span>
+                        {% elif media.number_of_seasons %}
+                        <span class="badge bg-danger text-uppercase">{{ media.number_of_seasons }} Staffel{% if media.number_of_seasons > 1 %}n{% endif %}</span>
+                        {% endif %}
+                    </div>
+
+                    {% if media.cast %}
+                    <div class="mb-3">
+                        <span class="text-white-50 small d-block text-uppercase fw-bold mb-1"
+                              style="font-size: 0.75rem;">Besetzung</span>
+                        <p class="m-0 text-white-50" style="font-size: 0.95rem; line-height: 1.4;">
+                            {% for actor in media.cast|slice:":10" %}
+                            <span class="text-white fw-medium">{{ actor.name }}</span>{% if not forloop.last %},
+                            {% endif %}
+                            {% endfor %}
+                        </p>
+                    </div>
                     {% endif %}
                 </div>
 
-                {% if media.cast %}
-                <div class="mb-3">
-                    <span class="text-white-50 small d-block text-uppercase fw-bold mb-1" style="font-size: 0.75rem;">Besetzung</span>
-                    <p class="m-0 text-white-50" style="font-size: 0.95rem; line-height: 1.4;">
-                        {% for actor in media.cast|slice:":10" %}
-                        <span class="text-white fw-medium">{{ actor.name }}</span>{% if not forloop.last %}, {% endif %}
-                        {% endfor %}
+                <!-- 3. Beschreibung -->
+                <div class="p-3 rounded-3 flex-grow-1" style="background-color: #2b2b2b; border: 1px solid #3a3a3a;">
+                    <h6 class="text-uppercase fw-bold text-white-50 small mb-2"
+                        style="letter-spacing: 0.5px; font-size: 0.75rem;">Beschreibung</h6>
+                    <p class="card-text text-white m-0 lh-base" style="font-size: 0.95rem; text-align: justify;">
+                        {{ media.description|default:"Keine Beschreibung verfügbar." }}
                     </p>
+                </div>
+
+                <!-- Zurück-Button -->
+                <div class="d-flex justify-content-end mt-3">
+                    <a href="javascript:history.back()" class="btn btn-outline-light btn-sm px-3 rounded-pill"
+                       style="font-size: 0.8rem;">
+                        ← Zurück
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- UNTERER BLOCK: BEWERTUNGEN MITTIG DARUNTER  -->
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-9">
+
+            <!-- Eingabefeld für eigene Bewertung -->
+            <div id="rating-form-section" class="card bg-dark text-white border-0 shadow-lg p-4 mb-4"
+                 style="border-radius: 16px;">
+                <h5 class="fw-bold mb-3 text-white">Deine Review abgeben</h5>
+                {% if request.user.is_authenticated %}
+                <form method="POST"
+                      class="bg-black bg-opacity-25 p-3 rounded-3 border border-secondary border-opacity-20">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="rating-slider" class="form-label text-white-50 small">Bewertung (1 bis 10):</label>
+                        <div class="d-flex align-items-center gap-3">
+                            <input type="range" name="rating" class="form-range" min="1" max="10" step="1"
+                                   id="rating-slider"
+                                   value="{{ form.rating.value|default:5 }}"
+                                   oninput="this.nextElementSibling.innerText = this.value">
+                            <span class="fw-bold fs-5 text-white" style="min-width: 25px;">{{ form.rating.value|default:5 }}</span>
+                        </div>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label class="form-label text-white-50 small">Deine Meinung (optional):</label>
+                        {{ form.text }}
+                    </div>
+                    <button type="submit" class="btn btn-danger btn-sm px-4 rounded-pill fw-semibold"
+                            style="background-color: #E50914;">
+                        Speichern
+                    </button>
+                </form>
+                {% else %}
+                <div class="alert alert-secondary bg-dark border-secondary text-center text-white-50 small m-0">
+                    Bitte <a href="{% url 'login' %}" class="text-danger fw-bold text-decoration-none">einloggen</a>, um
+                    eine Bewertung abzugeben.
                 </div>
                 {% endif %}
             </div>
 
-            <!-- 3. Beschreibung -->
-            <div class="p-3 rounded-3 flex-grow-1" style="background-color: #2b2b2b; border: 1px solid #3a3a3a;">
-                <h6 class="text-uppercase fw-bold text-white-50 small mb-2"
-                    style="letter-spacing: 0.5px; font-size: 0.75rem;">Beschreibung</h6>
-                <p class="card-text text-white m-0 lh-base" style="font-size: 0.95rem; text-align: justify;">
-                    {{ media.description|default:"Keine Beschreibung verfügbar." }}
-                </p>
-            </div>
+            <!-- Liste aller User-Bewertungen -->
+            <div class="card bg-dark text-white border-0 shadow-lg p-4" style="border-radius: 16px;">
+                <h5 class="fw-bold mb-4 text-white">Reviews ({{ ratings.count }})</h5>
 
-            <!-- Zurück-Button -->
-            <div class="d-flex justify-content-end mt-3">
-                <a href="javascript:history.back()" class="btn btn-outline-light btn-sm px-3 rounded-pill"
-                   style="font-size: 0.8rem;">
-                    ← Zurück
-                </a>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-<!-- UNTERER BLOCK: BEWERTUNGEN MITTIG DARUNTER  -->
-<div class="row justify-content-center">
-    <div class="col-12 col-lg-9">
-
-        <!-- Eingabefeld für eigene Bewertung -->
-        <div id="rating-form-section" class="card bg-dark text-white border-0 shadow-lg p-4 mb-4"
-             style="border-radius: 16px;">
-            <h5 class="fw-bold mb-3 text-white">Deine Review abgeben</h5>
-            {% if request.user.is_authenticated %}
-            <form method="POST" class="bg-black bg-opacity-25 p-3 rounded-3 border border-secondary border-opacity-20">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label class="form-label text-white-50 small">Bewertung (1 bis 10):</label>
-                    <div style="max-width: 120px;">
-                        {{ form.rating }}
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label text-white-50 small">Deine Meinung (optional):</label>
-                    {{ form.text }}
-                </div>
-                <button type="submit" class="btn btn-danger btn-sm px-4 rounded-pill fw-semibold"
-                        style="background-color: #E50914;">
-                    Speichern
-                </button>
-            </form>
-            {% else %}
-            <div class="alert alert-secondary bg-dark border-secondary text-center text-white-50 small m-0">
-                Bitte <a href="{% url 'login' %}" class="text-danger fw-bold text-decoration-none">einloggen</a>, um
-                eine Bewertung abzugeben.
-            </div>
-            {% endif %}
-        </div>
-
-        <!-- Liste aller User-Bewertungen -->
-        <div class="card bg-dark text-white border-0 shadow-lg p-4" style="border-radius: 16px;">
-            <h5 class="fw-bold mb-4 text-white">Reviews ({{ ratings.count }})</h5>
-
-            {% if ratings %}
-            <div class="d-flex flex-column gap-3">
-                {% for r in ratings %}
-                <div class="d-flex gap-3 p-3 rounded-3 bg-black bg-opacity-20 border border-secondary border-opacity-10">
-                    <!-- Profil-Icon links -->
-                    <div class="flex-shrink-0">
-                        <div class="custom-profile-btn" style="width: 35px; height: 35px; cursor: default;"></div>
-                    </div>
-                    <!-- Content rechts -->
-                    <div class="flex-grow-1">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="fw-bold text-white small">{{ r.user.username }}</span>
-                            <span class="badge bg-warning text-dark fw-bold">⭐ {{ r.rating }}/10</span>
+                {% if ratings %}
+                <div class="d-flex flex-column gap-3">
+                    {% for r in ratings %}
+                    <div class="d-flex gap-3 p-3 rounded-3 bg-black bg-opacity-20 border border-secondary border-opacity-10">
+                        <!-- Profil-Icon links -->
+                        <div class="flex-shrink-0">
+                            <div class="custom-profile-btn" style="width: 35px; height: 35px; cursor: default;"></div>
                         </div>
-                        {% if r.text %}
-                        <p class="text-white-50 m-0 mt-1 small lh-sm" style="text-align: justify;">
-                            {{ r.text }}
-                        </p>
-                        {% endif %}
+                        <!-- Content rechts -->
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-bold text-white small">{{ r.user.username }}</span>
+                                <span class="badge bg-warning text-dark fw-bold">⭐ {{ r.rating }}/10</span>
+                            </div>
+                            {% if r.text %}
+                            <p class="text-white-50 m-0 mt-1 small lh-sm" style="text-align: justify;">
+                                {{ r.text }}
+                            </p>
+                            {% endif %}
+                        </div>
                     </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
+                {% else %}
+                <p class="text-muted text-center my-4">Noch keine Reviews vorhanden. Sei der Erste! 🍿</p>
+                {% endif %}
             </div>
-            {% else %}
-            <p class="text-muted text-center my-4">Noch keine Reviews vorhanden. Sei der Erste! 🍿</p>
-            {% endif %}
-        </div>
 
+        </div>
     </div>
-</div>
 
 </div>
 

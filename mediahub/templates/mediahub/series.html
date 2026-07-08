@@ -4,13 +4,20 @@
 
 {% block content %}
 
-<h1 class="text-center text-white text-uppercase fw-bold display-3 my-5">
+<!-- <h1 class="text-center text-white text-uppercase fw-bold display-3 my-5">
     {% if page_title %}
     {{ page_title }}
     {% else %}
     SERIES
     {% endif %}
-</h1>
+</h1> -->
+
+
+<div class="text-center text-white text-uppercase fw-bold display-5">
+    <h1 class="fw-bold m-2 ms-1 text-white h1 d-inline-block">
+        Top Serien
+    </h1>
+</div>
 
 <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4 px-md-5">
     {% for item in items %}

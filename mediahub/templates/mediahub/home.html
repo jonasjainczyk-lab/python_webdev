@@ -27,7 +27,7 @@
             {% for item in top_movies %}
             <a href="{% url 'detail' item.media_type item.id %}"
                class="d-block text-decoration-none text-reset flex-shrink-0">
-                <div class="movie-card h-100">
+                <div class="movie-card h-100 movie-card-width">
                     <div class="card-cover-container">
                         <img src="{{ item.poster_url }}" class="card-cover" alt="{{ item.title }}">
                     </div>
@@ -53,7 +53,7 @@
             {% for item in top_series %}
             <a href="{% url 'detail' item.media_type item.id %}"
                class="d-block text-decoration-none text-reset flex-shrink-0">
-                <div class="movie-card h-100">
+                <div class="movie-card h-100 movie-card-width">
                     <div class="card-cover-container">
                         <img src="{{ item.poster_url }}" class="card-cover" alt="{{ item.title }}">
                     </div>
@@ -79,7 +79,7 @@
             {% for item in top_anime %}
             <a href="{% url 'detail' item.media_type item.id %}"
                class="d-block text-decoration-none text-reset flex-shrink-0">
-                <div class="movie-card h-100">
+                <div class="movie-card h-100 movie-card-width">
                     <div class="card-cover-container">
                         <img src="{{ item.poster_url }}" class="card-cover" alt="{{ item.title }}">
                     </div>

@@ -54,14 +54,12 @@
 
         <div class="d-flex align-items-center">
         {% if request.user.is_authenticated %}
-            <a href="{% url 'user_profile' %}" class="text-decoration-none">
-                <div class="custom-profile-btn">
-                    {{ request.user.username|slice:":1"|upper }}
-                </div>
+            <a href="{% url 'user_profile' %}" class="navbar-logo-link">
+                <img src="{% static 'mediahub/profil.png' %}" alt="MediaShelf Profil Icon" class="navbar-logo-img">
             </a>
             {% else %}
-            <a href="{% url 'login' %}" class="text-decoration-none">
-                <div class="custom-profile-btn"></div>
+            <a href="{% url 'login' %}" class="navbar-logo-link">
+                <img src="{% static 'mediahub/profil.png' %}" alt="MediaShelf Profil Icon" class="navbar-logo-img">
             </a>
             {% endif %}
         </div>
