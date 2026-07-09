@@ -7,4 +7,4 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
         # Add or remove fields you want visible on signup
-        fields = ("Benutzername", "Email")
+        fields = ("username", "email")

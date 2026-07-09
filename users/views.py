@@ -24,8 +24,8 @@ def register(request):
                     "Der Account wurde erstellt, aber die Standardgruppe fehlt."
                 )
 
-            messages.success(request, "Registrierung war erfolgreich")
-            return redirect("home")
+            messages.success(request, "Registrierung war erfolgreich, Sie können sich nun anmelden")
+            return redirect("login")
     else:
         form = CustomUserCreationForm()
     return render(request, "users/register.html", {"form": form})
