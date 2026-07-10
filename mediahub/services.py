@@ -6,6 +6,7 @@ BASE_URL = "https://api.themoviedb.org/3"
 
 # Schwellenwert um nur relevante Ergebnisse zu bekommen
 MIN_VOTES = 500
+ANIME_MIN_VOTES = 100
 
 # Für die Genre-basierte Suche die richtige genre-id finden für jeweils "movie" und "tv" Suche
 SEARCH_GENRE_MAPPING = {
@@ -261,7 +262,7 @@ def get_top_rated_anime(limit=10,genre_id=""):
         if genre_id and genre_id != "16":
             genres = f"16,{genre_id}"
 
-        url = f"{BASE_URL}/discover/tv?api_key={API_KEY}&language=de-DE&with_genres={genres}&with_original_language=ja&sort_by=vote_average.desc&vote_count.gte={MIN_VOTES}&page={page}"
+        url = f"{BASE_URL}/discover/tv?api_key={API_KEY}&language=de-DE&with_genres={genres}&with_original_language=ja&sort_by=vote_average.desc&vote_count.gte={ANIME_MIN_VOTES}&page={page}"
 
         response = requests.get(url)
 

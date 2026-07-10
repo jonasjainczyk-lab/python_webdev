@@ -12,7 +12,7 @@ BASE_URL = "https://image.tmdb.org/t/p/"
 POSTER_SIZE = "w500"
 PAGE_SIZE = 36
 SUBPAGE_ITEM_LIMIT = 180
-SUBPAGE_FETCH_LIMIT = 220
+SUBPAGE_FETCH_LIMIT = 240
 
 def paginate_items(request, items):
     paginator = Paginator(items, PAGE_SIZE)
@@ -325,7 +325,6 @@ def movies_page(request):
 
     raw_movies = get_top_rated_movies(limit=SUBPAGE_FETCH_LIMIT,genre_id=selected_genre)
     raw_movies = remove_japanese_anime_from_list(raw_movies)
-    raw_movies = raw_movies[:SUBPAGE_ITEM_LIMIT]
 
     movies = normalize_media_list(
         raw_movies,
@@ -338,6 +337,7 @@ def movies_page(request):
     ]
 
     movies = sort_by_rating_desc(movies)
+    movies = movies[:SUBPAGE_ITEM_LIMIT]
     page_obj = paginate_items(request, movies)
 
     page_title = "Top Filme"
@@ -365,7 +365,6 @@ def series_page(request):
 
     raw_series = get_top_rated_series(limit=SUBPAGE_FETCH_LIMIT + 50,genre_id=selected_genre)
     raw_series = remove_japanese_anime_from_list(raw_series)
-    raw_series = raw_series[:SUBPAGE_ITEM_LIMIT]
 
     series = normalize_media_list(
         raw_series,
@@ -378,6 +377,7 @@ def series_page(request):
     ]
 
     series = sort_by_rating_desc(series)
+    series = series[:SUBPAGE_ITEM_LIMIT]
     page_obj = paginate_items(request, series)
 
     page_title = "Top Serien"
@@ -403,19 +403,20 @@ def anime_page(request):
     selected_genre = request.GET.get("genre", "").strip()
     genres = get_genres_for_media_type("tv")
 
-    raw_anime = get_top_rated_anime(limit=SUBPAGE_ITEM_LIMIT,genre_id=selected_genre)
-
+    raw_anime = get_top_rated_anime(limit=SUBPAGE_FETCH_LIMIT,genre_id=selected_genre)
+    print("RAW ANIME:", len(raw_anime))
     anime = normalize_media_list(
         raw_anime,
         fallback_media_type="tv",
     )
-
+    print("NORMALIZED ANIME:", len(anime))
     anime = [
         item for item in anime
         if has_latin_title(item)
     ]
-
+    print("AFTER LATIN FILTER:", len(anime))
     anime = sort_by_rating_desc(anime)
+    anime = anime[:SUBPAGE_ITEM_LIMIT]
     page_obj = paginate_items(request, anime)
 
     page_title = "Top Anime"
