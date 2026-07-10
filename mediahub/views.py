@@ -324,10 +324,17 @@ def movies_page(request):
     movies = sort_by_rating_desc(movies)
     page_obj = paginate_items(request, movies)
 
+    page_title = "Top Filme"
+    if selected_genre:
+        # Sucht das passende Genre aus der genres-Liste heraus, um den Namen zu bekommen
+        active_genre = next((g for g in genres if str(g.get('id')) == selected_genre), None)
+        if active_genre:
+            page_title = active_genre.get('name') + " Filme"
+
     context = {
         "items": page_obj.object_list,
         "page_obj": page_obj,
-        "page_title": "Top Filme",
+        "page_title": page_title,
         "genres": genres,
         "selected_genre": selected_genre,
     }
@@ -352,10 +359,17 @@ def series_page(request):
     series = sort_by_rating_desc(series)
     page_obj = paginate_items(request, series)
 
+    page_title = "Top Serien"
+    if selected_genre:
+        # Sucht das passende Genre aus der genres-Liste heraus, um den Namen zu bekommen
+        active_genre = next((g for g in genres if str(g.get('id')) == selected_genre), None)
+        if active_genre:
+            page_title = active_genre.get('name') + " Serien"
+
     context = {
         "items": page_obj.object_list,
         "page_obj": page_obj,
-        "page_title": "Top Serien",
+        "page_title": page_title,
         "genres": genres,
         "selected_genre": selected_genre,
     }
@@ -378,10 +392,17 @@ def anime_page(request):
     anime = sort_by_rating_desc(anime)
     page_obj = paginate_items(request, anime)
 
+    page_title = "Top Anime"
+    if selected_genre:
+        # Sucht das passende Genre aus der genres-Liste heraus, um den Namen zu bekommen
+        active_genre = next((g for g in genres if str(g.get('id')) == selected_genre), None)
+        if active_genre:
+            page_title = active_genre.get('name') + " Anime";
+
     context = {
         "items": page_obj.object_list,
         "page_obj": page_obj,
-        "page_title": "Top Anime",
+        "page_title": page_title,
         "genres": genres,
         "selected_genre": selected_genre,
     }
