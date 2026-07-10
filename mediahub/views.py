@@ -6,6 +6,7 @@ from .forms import UserRatingForm
 from .models import UserRating
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
+import re
 
 BASE_URL = "https://image.tmdb.org/t/p/"
 POSTER_SIZE = "w500"
@@ -244,8 +245,18 @@ def home(request):
 
     return render(request, "mediahub/home.html", context)
 
+def has_latin_title(item):
+    title = item.get("title", "")
+
+    if not title:
+        return False
+
+    return bool(re.match(r"^[A-Za-zÀ-ÖØ-öø-ÿ0-9\s.,:;!?'\-–—&()/]+$", title))
 
 def has_enough_search_quality(item):
+    if not has_latin_title(item):
+        return False
+
     quality_count = 0
 
     if item.get("poster_url"):
@@ -321,6 +332,11 @@ def movies_page(request):
         fallback_media_type="movie",
     )
 
+    movies = [
+        item for item in movies
+        if has_latin_title(item)
+    ]
+
     movies = sort_by_rating_desc(movies)
     page_obj = paginate_items(request, movies)
 
@@ -356,6 +372,11 @@ def series_page(request):
         fallback_media_type="tv",
     )
 
+    series = [
+        item for item in series
+        if has_latin_title(item)
+    ]
+
     series = sort_by_rating_desc(series)
     page_obj = paginate_items(request, series)
 
@@ -388,6 +409,11 @@ def anime_page(request):
         raw_anime,
         fallback_media_type="tv",
     )
+
+    anime = [
+        item for item in anime
+        if has_latin_title(item)
+    ]
 
     anime = sort_by_rating_desc(anime)
     page_obj = paginate_items(request, anime)
