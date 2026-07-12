@@ -46,7 +46,16 @@
                 {% endif %}
                 <div style="width: 350px">
                     <form method="get" action="{% url 'search' %}">
-                        <input class="form-control custom-search-input" name="query" placeholder="Suche...">
+                        {% if is_search_page and selected_genre %}
+                        <input type="hidden" name="genre" value="{{ selected_genre }}">
+                        {% endif %}
+
+                        <input class="form-control custom-search-input"
+                               name="query"
+                               placeholder="Suche..."
+                               value="{{ query|default:'' }}"
+                               onclick="this.select()"
+                               onfocus="this.select()">
                     </form>
                 </div>
             </div>

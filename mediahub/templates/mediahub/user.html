@@ -76,7 +76,7 @@
                                 <h5 class="fw-bold m-0 h6 text-white">
                                     {{ r.media_title }}
                                 </h5>
-                                <span class="badge bg-warning text-dark fw-bold flex-shrink-0">⭐ {{ r.rating }}/10</span>
+                                <span class="badge bg-warning text-dark fw-bold flex-shrink-0">⭐ {{ r.rating|floatformat:"-1" }}/10</span>
                             </div>
 
                             {% if r.text %}

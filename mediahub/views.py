@@ -313,6 +313,7 @@ def search(request):
         "results": results,
         "page_obj": page_obj,
         "has_search": has_search,
+        "is_search_page": True,
     }
 
     return render(request, "mediahub/search.html", context)

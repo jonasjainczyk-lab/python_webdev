@@ -61,7 +61,7 @@
                     <div class="text-end">
                         <span class="text-white-50 small d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Deine Bewertung</span>
                         {% if user_rating %}
-                        <span class="fw-bold text-info fs-4">⭐ {{ user_rating.rating }}/10</span>
+                        <span class="fw-bold text-info fs-4">⭐ {{ user_rating.rating|floatformat:"-1" }}/10</span>
                         {% else %}
                         <a href="#rating-form-section" class="btn btn-sm btn-outline-secondary rounded-pill mt-1"
                            style="font-size: 0.8rem;">
@@ -142,16 +142,27 @@
                 <form method="POST"
                       class="bg-black bg-opacity-25 p-3 rounded-3 border border-secondary border-opacity-20">
                     {% csrf_token %}
-
+                    {% if form.errors %}
+                    <div class="alert alert-danger small">
+                        {{ form.errors }}
+                    </div>
+                    {% endif %}
                     <div class="mb-3">
                         <label class="form-label text-white-50 small">Bewertung (0 bis 10):</label>
                         <div class="d-flex align-items-center gap-3">
-                            <input type="range" name="rating" class="form-range" min="0" max="9.5" step="0.5"
-                                   value="{% if form.rating.value %}{{ form.rating.value|stringformat:'.1f' }}{% else %}5.0{% endif %}"
-                                   oninput="this.nextElementSibling.innerText = parseFloat(this.value).toFixed(1)">
+                            <input type="range" name="rating" class="form-range" min="0" max="10" step="0.5"
+                                   value="{% if form.rating.value != None %}{{ form.rating.value|stringformat:'.1f' }}{% else %}5.0{% endif %}"
+                                   oninput="
+                                       const value = parseFloat(this.value);
+                                       this.nextElementSibling.innerText = Number.isInteger(value) ? value.toString() : value.toFixed(1);
+                                   ">
 
                             <span class="fw-bold fs-5 text-white" style="min-width: 35px;">
-                                {% if form.rating.value %}{{ form.rating.value|stringformat:'.1f' }}{% else %}5.0{% endif %}
+                                {% if form.rating.value != None %}
+                                    {{ form.rating.value|floatformat:"-1" }}
+                                {% else %}
+                                    5
+                                {% endif %}
                             </span>
                         </div>
                     </div>
@@ -190,7 +201,7 @@
                         <div class="flex-grow-1">
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <span class="fw-bold text-white small">{{ r.user.username }}</span>
-                                <span class="badge bg-warning text-dark fw-bold">⭐ {{ r.rating }}/10</span>
+                                <span class="badge bg-warning text-dark fw-bold">⭐ {{ r.rating|floatformat:"-1" }}/10</span>
                             </div>
                             {% if r.text %}
                             <p class="text-white-50 m-0 mt-1 small lh-sm" style="text-align: justify;">

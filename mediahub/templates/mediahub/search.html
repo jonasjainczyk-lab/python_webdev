@@ -4,15 +4,19 @@
 
 {% block content %}
 <div class="container-fluid px-md-5 my-5">
+    {% if query %}
     <h1 class="text-center text-white text-uppercase fw-bold display-4 mb-4">
-        {% if query %}
         Ergebnisse für: "{{ query }}"
-        {% elif selected_genre %}
-        Genre: {{ selected_genre|title }}
-        {% else %}
-        Entdecken
-        {% endif %}
     </h1>
+    {% elif selected_genre %}
+    <h1 class="text-center text-white text-uppercase fw-bold display-4 mb-4">
+        Genre: {{ selected_genre|title }}
+    </h1>
+    {% else %}
+    <p class="text-center text-white-50 fs-5 my-5">
+        Bitte suche nach einem Titel oder wähle ein Genre aus.
+    </p>
+    {% endif %}
 
     {% if has_search and not results %}
     <div class="text-center text-muted my-5">
